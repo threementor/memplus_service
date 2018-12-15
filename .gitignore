@@ -1,4 +1,5 @@
 memplus
+.DS_Store
 swagger/
 samples/
 .idea/

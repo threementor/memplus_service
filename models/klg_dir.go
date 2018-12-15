@@ -204,6 +204,23 @@ func GetCards(this *KlgDir)([]*Card, error){
 	return cards, nil
 }
 
+func createNewTaskForCards(cardMap map[int]*Card, user *User) (tasks []*Task, err error){
+	// 没有的卡片重新建
+	o := orm.NewOrm()
+	for k, card := range cardMap{
+		fmt.Println("build new", k)
+		newTask := &Task{Card: card, Loop: &Loop{Id: 1}, UserId: user.Id}
+		id, err := o.Insert(newTask)
+		if err != nil{
+			return tasks, err
+		}else{
+			newTask.Id = int(id)
+			tasks = append(tasks, newTask)
+		}
+	}
+	return
+}
+
 
 func GetReadyTasks(this *KlgDir, user *User)([]*Task, error){
 
@@ -213,31 +230,44 @@ func GetReadyTasks(this *KlgDir, user *User)([]*Task, error){
 	if err != nil{
 		return nil, err
 	}
-	//获取所有task, 并且ready_time > now的
-	tasks := []*Task{}
 	o := orm.NewOrm()
 	qs := o.QueryTable("task")
+
+
+	tasks := []*Task{}
+	oldTasks := []*Task{}
 	cardMap := map[int]*Card{}
 	cardIds := []int{}
+	hasNoTaskCards := map[int]*Card{}
+
 	for _, card := range(cards){
 		cardMap[card.Id] = card
+		hasNoTaskCards[card.Id] = card
 		cardIds = append(cardIds, card.Id)
 	}
-	if len(cardMap) > 0{
-		qs.Filter("card_id__in", cardIds).Filter("trigger_start_time__lt", int(now.Unix())).All(&tasks)
-		for i:=0; i<len(tasks); i++{
-			t := tasks[i]
-			_, _ = o.LoadRelated(t, "card_id")
-			println("delete", t.Card.Id)
-			delete(cardMap, t.Card.Id)
+
+	// 筛选出来没有建立task的进行新建
+	qs.Filter("card_id__in", cardIds).All(&tasks)
+	for i:=0; i<len(tasks); i++{
+		task := tasks[i]
+		delete(hasNoTaskCards, task.Card.Id)
+		if task.TriggerStartTime < int(now.Unix()){
+			oldTasks = append(oldTasks, task)
 		}
 	}
-	// 没有的卡片重新建
-	for k, card := range cardMap{
-		fmt.Println("build new", k)
-		newTask := &Task{Card: card, Loop: &Loop{Id: 1}, UserId: user.Id}
-		o.Insert(newTask)
+
+	newTasks, err := createNewTaskForCards(hasNoTaskCards, user)
+	if err != nil{
+		return tasks, nil
 	}
+	newTasks = append(newTasks, oldTasks...)
+
+	//relation cardInfo
+	for i:=0; i<len(newTasks); i++{
+		task := tasks[i]
+		task.Card = cardMap[task.Card.Id]
+	}
+
 	return tasks, nil
 }
 
@@ -250,7 +280,7 @@ func copyCards(deck *AnkiDeck, newDir *KlgDir, user *User) error{
 
 	for i:=0; i<len(deckCards); i++{
 		dc := deckCards[i]
-		newCard := Card{Title: dc.Q, Content: dc.A, LoopId: 1, UserId: user.Id, KlgDirId:newDir.Id}
+		newCard := Card{Title: dc.Q, Content: dc.A, KlgDirId:newDir.Id, Type: "anki"}
 		_, e := o.Insert(&newCard)
 		if e != nil{
 			return errors.New(fmt.Sprintf("insert fail, %v", e.Error()))

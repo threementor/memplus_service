@@ -17,10 +17,8 @@ type Card struct {
 	DeletedAt time.Time `orm:"column(deleted_at);type(timestamp);null"`
 	Title     string    `orm:"column(title);size(255);null"`
 	Content   string    `orm:"column(content);size(255);null"`
-	LoopId    int       `orm:"column(loop_id);null"`
-	UserId    int      `orm:"column(user_id);null"`
 	KlgDirId   int      `orm:"column(klg_dir_id);null"`
-	RemCount  int       `orm:"column(rem_count);null"`
+	Type   string      `orm:"column(type);null"`
 }
 
 func (t *Card) TableName() string {

@@ -204,8 +204,9 @@ func GetCards(this *KlgDir)([]*Card, error){
 	return cards, nil
 }
 
-func createNewTaskForCards(cardMap map[int]*Card, user *User) (tasks []*Task, err error){
+func createNewTaskForCards(cardMap map[int]*Card, user *User) ( []*Task, error){
 	// 没有的卡片重新建
+	tasks := []*Task{}
 	o := orm.NewOrm()
 	for k, card := range cardMap{
 		fmt.Println("build new", k)
@@ -218,7 +219,7 @@ func createNewTaskForCards(cardMap map[int]*Card, user *User) (tasks []*Task, er
 			tasks = append(tasks, newTask)
 		}
 	}
-	return
+	return tasks, nil
 }
 
 
@@ -258,17 +259,17 @@ func GetReadyTasks(this *KlgDir, user *User)([]*Task, error){
 
 	newTasks, err := createNewTaskForCards(hasNoTaskCards, user)
 	if err != nil{
-		return tasks, nil
+		return newTasks, err
 	}
 	newTasks = append(newTasks, oldTasks...)
 
 	//relation cardInfo
 	for i:=0; i<len(newTasks); i++{
-		task := tasks[i]
+		task := newTasks[i]
 		task.Card = cardMap[task.Card.Id]
 	}
 
-	return tasks, nil
+	return newTasks[:100], nil
 }
 
 

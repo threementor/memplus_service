@@ -28,7 +28,7 @@ func main() {
 	beego.BConfig.WebConfig.Session.SessionProvider = "mysql"
 	beego.BConfig.WebConfig.Session.SessionProviderConfig = mysql_config
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-
+	orm.DefaultRowsLimit = 100000000
     orm.RegisterDataBase("default", "mysql", mysql_config)
 	orm.Debug = cnf.DefaultBool("debug", false)
 

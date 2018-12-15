@@ -1,7 +1,7 @@
 package controllers
 import (
 	"github.com/astaxie/beego"
-	"memplus/models"
+	"memplus_service/models"
 	"errors"
 )
 

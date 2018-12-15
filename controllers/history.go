@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"memplus/models"
+	"memplus_service/models"
 	"strconv"
 	"strings"
 

@@ -7,7 +7,7 @@ from fabric.context_managers import path
 
 env.hosts = ['root@likangwei.com']
 
-workDir = "/root/dev/gopath/src/memplus"
+workDir = "/root/dev/gopath/src/memplus_service"
 PATH = "/usr/lib/go-1.9/bin/" 
 
 commitMsg = ""

@@ -8,7 +8,7 @@
 package routers
 
 import (
-	"memplus/controllers"
+	"memplus_service/controllers"
 
 	"github.com/astaxie/beego"
 )

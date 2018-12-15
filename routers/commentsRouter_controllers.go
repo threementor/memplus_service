@@ -7,7 +7,7 @@ import (
 
 func init() {
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -15,7 +15,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -23,7 +23,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -31,7 +31,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -39,7 +39,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiCardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiCardController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -47,7 +47,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -55,7 +55,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -63,7 +63,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -71,7 +71,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -79,7 +79,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus/controllers:AnkiDeckController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:AnkiDeckController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -87,7 +87,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus/controllers:CardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -95,7 +95,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus/controllers:CardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -103,7 +103,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus/controllers:CardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -111,7 +111,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus/controllers:CardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -119,7 +119,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus/controllers:CardController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -127,7 +127,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus/controllers:HistoryController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -135,7 +135,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus/controllers:HistoryController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -143,7 +143,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus/controllers:HistoryController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -151,7 +151,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus/controllers:HistoryController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -159,7 +159,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus/controllers:HistoryController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:HistoryController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -167,7 +167,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -175,7 +175,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -183,7 +183,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -191,7 +191,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -199,7 +199,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -207,7 +207,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "GetReadyTasks",
 			Router: `/:id/ready_tasks`,
@@ -215,7 +215,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus/controllers:KlgDirController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "GetRootDirs",
 			Router: `/roots`,
@@ -223,7 +223,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -231,7 +231,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -239,7 +239,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -247,7 +247,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -255,7 +255,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeBasesController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeBasesController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -263,7 +263,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -271,7 +271,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -279,7 +279,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -287,7 +287,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -295,7 +295,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus/controllers:KnowledgeRelationsController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KnowledgeRelationsController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -303,7 +303,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus/controllers:LoopController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:LoopController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -311,7 +311,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus/controllers:LoopController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:LoopController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -319,7 +319,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus/controllers:LoopController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:LoopController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -327,7 +327,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus/controllers:LoopController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:LoopController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -335,7 +335,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus/controllers:LoopController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:LoopController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:LoopController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -343,7 +343,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -351,7 +351,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -359,7 +359,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -367,7 +367,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -375,7 +375,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -383,7 +383,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "Forget",
 			Router: `/:id/forget`,
@@ -391,7 +391,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "Remember",
 			Router: `/:id/remember`,
@@ -399,7 +399,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus/controllers:TaskController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TaskController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TaskController"],
 		beego.ControllerComments{
 			Method: "Soso",
 			Router: `/:id/soso`,
@@ -407,7 +407,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -415,7 +415,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -423,7 +423,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -431,7 +431,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -439,7 +439,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -447,7 +447,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Notify",
 			Router: `/alipay_notify`,
@@ -455,7 +455,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Return",
 			Router: `/alipay_return`,
@@ -463,7 +463,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus/controllers:TradeController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Pay",
 			Router: `/pay`,
@@ -471,7 +471,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Post",
 			Router: `/`,
@@ -479,7 +479,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
@@ -487,7 +487,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "GetOne",
 			Router: `/:id`,
@@ -495,7 +495,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
@@ -503,7 +503,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Delete",
 			Router: `/:id`,
@@ -511,7 +511,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "ChangePwd",
 			Router: `/change_pwd/`,
@@ -519,7 +519,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Login",
 			Router: `/login`,
@@ -527,7 +527,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Logout",
 			Router: `/logout`,
@@ -535,7 +535,7 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
-	beego.GlobalControllerRouter["memplus/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus/controllers:UserController"],
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Status",
 			Router: `/status/`,

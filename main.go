@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "memplus/routers"
+	_ "memplus_service/routers"
 	_ "github.com/astaxie/beego/session/mysql"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/session"

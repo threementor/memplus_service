@@ -473,14 +473,6 @@ func init() {
 
 	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
 		beego.ControllerComments{
-			Method: "Post",
-			Router: `/`,
-			AllowHTTPMethods: []string{"post"},
-			MethodParams: param.Make(),
-			Params: nil})
-
-	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
-		beego.ControllerComments{
 			Method: "GetAll",
 			Router: `/`,
 			AllowHTTPMethods: []string{"get"},
@@ -532,6 +524,14 @@ func init() {
 			Method: "Logout",
 			Router: `/logout`,
 			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
+		beego.ControllerComments{
+			Method: "Post",
+			Router: `/reg`,
+			AllowHTTPMethods: []string{"post"},
 			MethodParams: param.Make(),
 			Params: nil})
 

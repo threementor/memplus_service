@@ -38,12 +38,13 @@ func (c *UserController) URLMapping() {
 // @Param	body		body 	models.Users	true		"body for Users content"
 // @Success 201 {int} models.Users
 // @Failure 403 body is empty
-// @router / [post]
+// @router /reg [post]
 func (c *UserController) Post() {
 	var v models.User
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if _, err := models.AddUsers(&v); err == nil {
+		if uid, err := models.AddUsers(&v); err == nil {
 			c.Ctx.Output.SetStatus(201)
+			c.SetSession("uid", int(uid))
 			c.Data["json"] = v
 		} else {
 			c.Data["json"] = err.Error()

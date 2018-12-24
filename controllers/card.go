@@ -32,11 +32,23 @@ func (c *CardController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *CardController) Post() {
-	var v models.Card
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if _, err := models.AddCard(&v); err == nil {
-			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = v
+	var note models.Note
+	var card models.Card
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &note); err == nil {
+		if nid, err := models.AddNote(&note); err == nil {
+			note.Id = int(nid)
+			if err := json.Unmarshal(c.Ctx.Input.RequestBody, &card); err == nil {
+				card.Loop = &models.Loop{Id: 1}
+				card.Note = &note
+				if _, err = models.AddCard(&card); err == nil {
+					c.Ctx.Output.SetStatus(201)
+
+					c.Data["json"] = card
+				}else{
+					c.Data["json"] = err.Error()
+				}
+			}
+
 		} else {
 			c.Data["json"] = err.Error()
 		}

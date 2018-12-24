@@ -22,7 +22,6 @@ func (t *AnkiDeck) TableName() string {
 }
 
 func init() {
-	println("init anki deck")
 	orm.RegisterModel(new(AnkiDeck))
 }
 

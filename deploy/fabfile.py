@@ -29,7 +29,7 @@ def deploy():
                 run("echo $PATH; echo $GOPATH")
                 run("git reset --hard")
                 run("go get github.com/smartwalle/alipay")
-                run("go get -u github.com/satori/go.uuid")
+                run("go get github.com/satori/go.uuid")
                 run("git pull")
                 run("go build")
                 run("cp /root/dev/gopath/src/memplus.conf %s/conf/app.conf" % workDir)

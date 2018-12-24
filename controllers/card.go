@@ -121,11 +121,7 @@ func (c *CardController) GetAll() {
 
 	l, err := models.GetAllCard(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		if err.Error() == "<QuerySeter> no row found"{
-			c.Data["json"] = [][]string{}
-		}else{
-			c.Data["json"] = err.Error()
-		}
+		c.Data["json"] = err.Error()
 	} else {
 		c.Data["json"] = l
 	}
@@ -170,6 +166,65 @@ func (c *CardController) Delete() {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
+
+
+
+// Put ...
+// @Title Put
+// @Description forget the Note
+// @Param	id		path 	string	true		"forget klg"
+// @Success 200 {object} models.Note
+// @Failure 403 :id is not int
+// @router /:id/forget [put]
+func (c *CardController) Forget() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	task, err := models.ForgetCard(id)
+	if err == nil {
+		c.Data["json"] = map[string]interface{}{"success": true, "data": task}
+	} else {
+		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
+	}
+	c.ServeJSON()
+}
+
+// Put ...
+// @Title Put
+// @Description forget the Note
+// @Param	id		path 	string	true		"soso klg"
+// @Success 200 {object} models.Note
+// @Failure 403 :id is not int
+// @router /:id/soso [put]
+func (c *CardController) Soso() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	task, err := models.SosoCard(id)
+	if err == nil {
+		c.Data["json"] = map[string]interface{}{"success": true, "data": task}
+	} else {
+		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
+	}
+	c.ServeJSON()
+}
+
+// Put ...
+// @Title Put
+// @Description forget the Note
+// @Param	id		path 	string	true		"remeber klg"
+// @Success 200 {object} models.Note
+// @Failure 403 :id is not int
+// @router /:id/remember [put]
+func (c *CardController) Remember() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	task, err := models.RememberCard(id)
+	if err == nil {
+		c.Data["json"] = map[string]interface{}{"success": true, "data": task}
+	} else {
+		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
 	}
 	c.ServeJSON()
 }

@@ -52,9 +52,9 @@ func init() {
 			),
 		),
 
-		beego.NSNamespace("/tasks",
+		beego.NSNamespace("/cards",
 			beego.NSInclude(
-				&controllers.TaskController{},
+				&controllers.CardController{},
 			),
 		),
 

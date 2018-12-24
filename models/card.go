@@ -11,14 +11,19 @@ import (
 )
 
 type Card struct {
-	Id        int       `orm:"column(id);auto"`
-	CreatedAt time.Time `orm:"column(created_at);type(timestamp);null"`
-	UpdatedAt time.Time `orm:"column(updated_at);type(timestamp);null"`
-	DeletedAt time.Time `orm:"column(deleted_at);type(timestamp);null"`
-	Title     string    `orm:"column(title);size(255);null"`
-	Content   string    `orm:"column(content);size(255);null"`
-	KlgDirId   int      `orm:"column(klg_dir_id);null"`
-	Type   string      `orm:"column(type);null"`
+	Id               int       `orm:"column(id);auto"`
+	CreatedAt        time.Time `orm:"column(created_at);type(timestamp);null"`
+	UpdatedAt        time.Time `orm:"column(updated_at);type(timestamp);null"`
+	DeletedAt        time.Time `orm:"column(deleted_at);type(timestamp);null"`
+	Status           string    `orm:"column(status);size(255);null"`
+	Level            int       `orm:"column(level);null"`
+	TriggerStartTime int       `orm:"column(trigger_start_time);null"`
+	TriggerDueTime   int       `orm:"column(trigger_due_time);null"`
+	Note             *Note      `orm:"rel(one);column(nid);null"`
+	Loop           *Loop      `orm:"rel(one);column(loop_id);null"`
+	UserId           uint      `orm:"column(user_id);null"`
+	Finish           bool      `orm:"column(finish);null"`
+	Did              int       `orm:"column(did);null"`
 }
 
 func (t *Card) TableName() string {
@@ -151,6 +156,113 @@ func DeleteCard(id int) (err error) {
 		var num int64
 		if num, err = o.Delete(&Card{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
+		}
+	}
+	return
+}
+
+
+func GetNextTriggerTime(this *Card) (nextTriggerTime time.Time, err error, Finish bool){
+	now := time.Now()
+	o := orm.NewOrm()
+	_, err = o.LoadRelated(this, "loop_id")
+	if err != nil{
+		return nextTriggerTime, errors.New("load loop id fail"), false
+	}
+
+	loopDurs := this.Loop.GetLoops()
+	lev := this.Level
+	if lev < 0{
+		lev = 0
+	}
+	if len(loopDurs) <= this.Level{
+		err = errors.New("CardComplete")
+	}else{
+		nextTriggerTime = now.Add(loopDurs[lev])
+	}
+	return
+}
+
+
+func RememberCard(id int) (card *Card, err error) {
+	o := orm.NewOrm()
+	card = &Card{Id: id}
+	if err = o.Read(card); err == nil {
+		now := time.Now()
+
+		if card.TriggerStartTime > int(now.Unix()){
+			return card, errors.New("还未到复习时间")
+		}
+
+		card.Level ++
+		nextTrigger, err, complete := GetNextTriggerTime(card)
+		if err != nil{
+			return card, errors.New(fmt.Sprintf("%v: %v", "获取复习时间失败", err))
+		}
+		card.Finish = complete
+		card.TriggerStartTime = int(nextTrigger.Unix())
+		card.TriggerDueTime = card.TriggerStartTime + 60 * 60 * 24
+		_, err = o.Update(card)
+		if err == nil{
+			LogCardHistory(card, "complete")
+		}else{
+			return card, errors.New(fmt.Sprintf("%v: %v", "更新失败", err.Error()))
+		}
+	}
+	return
+}
+
+
+func ForgetCard(id int) (task *Card, err error) {
+	o := orm.NewOrm()
+	task = &Card{Id: id}
+	if err = o.Read(task); err == nil {
+		now := time.Now()
+		if task.TriggerStartTime > int(now.Unix()){
+			err = errors.New("还未到复习时间")
+			return
+		}
+		task.Level--
+		if(task.Level < 0 ){
+			task.Level = 0
+		}
+		nextTrigger, err, finish := GetNextTriggerTime(task)
+		if err != nil{
+			return nil, err
+		}
+		task.TriggerStartTime = int(nextTrigger.Unix())
+		task.TriggerDueTime = task.TriggerStartTime + 60 * 60 * 24
+		task.Finish = finish
+		_, err = o.Update(task)
+		if err == nil{
+			// LogCardHistory(task, "complete")
+		}
+	}
+	return
+}
+
+
+func SosoCard(id int) (task *Card, err error) {
+	o := orm.NewOrm()
+	task = &Card{Id: id}
+	if err = o.Read(task); err == nil {
+		now := time.Now()
+		if task.TriggerStartTime > int(now.Unix()){
+			err = errors.New("还未到复习时间")
+			return
+		}
+
+		nextTrigger, err, finish := GetNextTriggerTime(task)
+		if err != nil{
+			return nil, err
+		}
+		task.Finish = finish
+		task.TriggerStartTime = int(nextTrigger.Unix())
+		task.TriggerDueTime = task.TriggerStartTime + 60 * 60 * 24
+		o.Update(task)
+		_, err = o.Update(task)
+		if err == nil{
+			LogCardHistory(task, "complete")
 		}
 	}
 	return

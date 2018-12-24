@@ -153,7 +153,7 @@ func DeleteHistory(id int) (err error) {
 }
 
 
-func LogTaskHistory(task *Task, action string){
+func LogCardHistory(task *Card, action string){
 	now := time.Now()
 	o := orm.NewOrm()
 	history := History{TaskId: task.Id, Action: action, CurLevel: task.Level, Timestamp: int(now.Unix())}

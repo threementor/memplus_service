@@ -234,7 +234,7 @@ func init() {
 	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
 		beego.ControllerComments{
 			Method: "GetReadyTasks",
-			Router: `/:id/ready_tasks`,
+			Router: `/:id/ready_cards`,
 			AllowHTTPMethods: []string{"get"},
 			MethodParams: param.Make(),
 			Params: nil})

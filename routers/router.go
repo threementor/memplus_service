@@ -40,7 +40,7 @@ func init() {
 			),
 		),
 
-		beego.NSNamespace("/klg_record",
+		beego.NSNamespace("/card",
 			beego.NSInclude(
 				&controllers.CardController{},
 			),
@@ -52,13 +52,7 @@ func init() {
 			),
 		),
 
-		beego.NSNamespace("/cards",
-			beego.NSInclude(
-				&controllers.CardController{},
-			),
-		),
-
-		beego.NSNamespace("/klg_dir",
+		beego.NSNamespace("/deck",
 			beego.NSInclude(
 				&controllers.KlgDirController{},
 			),

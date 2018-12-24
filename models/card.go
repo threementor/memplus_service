@@ -11,19 +11,18 @@ import (
 )
 
 type Card struct {
-	Id               int       `orm:"column(id);auto"`
-	CreatedAt        time.Time `orm:"column(created_at);type(timestamp);null"`
-	UpdatedAt        time.Time `orm:"column(updated_at);type(timestamp);null"`
-	DeletedAt        time.Time `orm:"column(deleted_at);type(timestamp);null"`
-	Status           string    `orm:"column(status);size(255);null"`
-	Level            int       `orm:"column(level);null"`
-	TriggerStartTime int       `orm:"column(trigger_start_time);null"`
-	TriggerDueTime   int       `orm:"column(trigger_due_time);null"`
-	Note             *Note      `orm:"rel(one);column(nid);null"`
-	Loop           *Loop      `orm:"rel(one);column(loop_id);null"`
-	UserId           uint      `orm:"column(user_id);null"`
-	Finish           bool      `orm:"column(finish);null"`
-	Did              int       `orm:"column(did);null"`
+	Id             int       `orm:"column(id);auto"`
+	CreatedAt      time.Time `orm:"column(created_at);type(timestamp);null"`
+	UpdatedAt      time.Time `orm:"column(updated_at);type(timestamp);null"`
+	DeletedAt      time.Time `orm:"column(deleted_at);type(timestamp);null"`
+	Status         string    `orm:"column(status);size(255);null"`
+	Level          int       `orm:"column(level);null"`
+	NextTrigger    time.Time `orm:"column(trigger_start_time);type(timestamp);null"`
+	Note           *Note     `orm:"rel(one);column(nid);null"`
+	Loop           *Loop     `orm:"rel(one);column(loop_id);null"`
+	UserId         uint      `orm:"column(user_id);null"`
+	Finish         bool      `orm:"column(finish);null"`
+	Did            int       `orm:"column(did);null"`
 }
 
 func (t *Card) TableName() string {
@@ -190,7 +189,7 @@ func RememberCard(id int) (card *Card, err error) {
 	if err = o.Read(card); err == nil {
 		now := time.Now()
 
-		if card.TriggerStartTime > int(now.Unix()){
+		if card.NextTrigger.Unix() > now.Unix(){
 			return card, errors.New("还未到复习时间")
 		}
 
@@ -200,8 +199,7 @@ func RememberCard(id int) (card *Card, err error) {
 			return card, errors.New(fmt.Sprintf("%v: %v", "获取复习时间失败", err))
 		}
 		card.Finish = complete
-		card.TriggerStartTime = int(nextTrigger.Unix())
-		card.TriggerDueTime = card.TriggerStartTime + 60 * 60 * 24
+		card.NextTrigger = nextTrigger
 		_, err = o.Update(card)
 		if err == nil{
 			LogCardHistory(card, "complete")
@@ -218,7 +216,7 @@ func ForgetCard(id int) (task *Card, err error) {
 	task = &Card{Id: id}
 	if err = o.Read(task); err == nil {
 		now := time.Now()
-		if task.TriggerStartTime > int(now.Unix()){
+		if task.NextTrigger.Unix() > now.Unix(){
 			err = errors.New("还未到复习时间")
 			return
 		}
@@ -226,13 +224,7 @@ func ForgetCard(id int) (task *Card, err error) {
 		if(task.Level < 0 ){
 			task.Level = 0
 		}
-		nextTrigger, err, finish := GetNextTriggerTime(task)
-		if err != nil{
-			return nil, err
-		}
-		task.TriggerStartTime = int(nextTrigger.Unix())
-		task.TriggerDueTime = task.TriggerStartTime + 60 * 60 * 24
-		task.Finish = finish
+		task.NextTrigger = now
 		_, err = o.Update(task)
 		if err == nil{
 			// LogCardHistory(task, "complete")
@@ -247,7 +239,7 @@ func SosoCard(id int) (task *Card, err error) {
 	task = &Card{Id: id}
 	if err = o.Read(task); err == nil {
 		now := time.Now()
-		if task.TriggerStartTime > int(now.Unix()){
+		if task.NextTrigger.Unix() > now.Unix(){
 			err = errors.New("还未到复习时间")
 			return
 		}
@@ -257,8 +249,7 @@ func SosoCard(id int) (task *Card, err error) {
 			return nil, err
 		}
 		task.Finish = finish
-		task.TriggerStartTime = int(nextTrigger.Unix())
-		task.TriggerDueTime = task.TriggerStartTime + 60 * 60 * 24
+		task.NextTrigger = nextTrigger
 		o.Update(task)
 		_, err = o.Update(task)
 		if err == nil{

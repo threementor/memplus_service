@@ -59,7 +59,7 @@ func (c *KlgDirController) Post() {
 // @Description get GetTasks  by Deck id
 // @Param	id		path 	string	true		"The key for staticblock"
 // @Success 200 {object} models.Note
-// @router /:id/ready_tasks [get]
+// @router /:id/ready_cards [get]
 func (c *KlgDirController) GetReadyTasks(){
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
@@ -70,11 +70,11 @@ func (c *KlgDirController) GetReadyTasks(){
 		return
 	}
 	user, _ := c.GetUser()
-	tasks, err := models.GetReadyCards(dir, user)
+	cards, err := models.GetReadyCards(dir, user)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
-		c.Data["json"] = tasks
+		c.Data["json"] = cards
 	}
 	c.ServeJSON()
 }

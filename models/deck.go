@@ -140,7 +140,7 @@ func UpdateKlgDirById(m *Deck) (err error) {
 // the record to be deleted doesn't exist
 func DeleteKlgDir(id int) (err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable("klg_dir")
+	qs := o.QueryTable("card")
 	child_count, err := qs.Filter("parent_id", id).Count()
 	if err != nil{
 		return err
@@ -166,7 +166,7 @@ func GetSubDirs(this *Deck, with_self bool)([]*Deck, error){
 	}
 	childs := []*Deck{}
 	o := orm.NewOrm()
-	qs := o.QueryTable("klg_dir")
+	qs := o.QueryTable("deck")
 	qs.Filter("parent_id", this.Id).All(&childs)
 
 	for _, c := range(childs){
@@ -199,7 +199,7 @@ func GetCards(this *Deck)([]*Card, error){
 	for _, sd := range(subDirs){
 		sub_dir_ids = append(sub_dir_ids, sd.Id)
 	}
-	qs.Filter("klg_dir_id__in", sub_dir_ids).All(&cards)
+	qs.Filter("did__in", sub_dir_ids).All(&cards)
 	return cards, nil
 }
 
@@ -208,35 +208,38 @@ func GetReadyCards(this *Deck, user *User)([]*Card, error){
 	//筛选子目录下的所有card，然后过滤readytime
 	cards, err := GetCards(this)
 	now := time.Now()
+	ready_cards := []*Card{}
 	if err != nil{
-		return nil, err
+		return ready_cards, err
 	}
 	o := orm.NewOrm()
-	ready_cards := []*Card{}
 	// 筛选出来没有建立task的进行新建
 	for i:=0; i<len(cards); i++{
 		card := cards[i]
-		if card.TriggerStartTime < int(now.Unix()){
+		if card.NextTrigger.Unix() < now.Unix(){
 			ready_cards = append(ready_cards, card)
 		}
+	}
+
+	if len(ready_cards) > 100{
+		ready_cards = ready_cards[:100]
 	}
 	//relation cardInfo
 	for i:=0; i<len(ready_cards); i++{
 		card := ready_cards[i]
 		o.LoadRelated(card, "note")
 	}
-	return ready_cards[:100], nil
+	return ready_cards, nil
 }
 
-func buildMemCardFromAnkiCard(ankiCard *AnkiCard) (*Card, error){
-	o := orm.NewOrm()
+func buildMemCardFromAnkiCard(ankiCard *AnkiCard, o orm.Ormer) (*Card, error){
 	note := Note{Title: ankiCard.Q, Content: ankiCard.A, Type: "anki"}
-	nid, err := o.Insert(note)
+	nid, err := o.Insert(&note)
 	if err != nil{
 		return nil, errors.New(fmt.Sprintf("insert note error, %v", err.Error()))
 	}
 	note.Id = int(nid)
-	newCard := Card{Note: &note}
+	newCard := Card{Note: &note, Loop: &Loop{Id: 1}}
 	_, e := o.Insert(&newCard)
 	if e != nil{
 		return nil, errors.New(fmt.Sprintf("insert card fail, %v", e.Error()))
@@ -254,9 +257,12 @@ func copyCards(deck *AnkiDeck, newDir *Deck, user *User, o orm.Ormer) error{
 
 	for i:=0; i<len(ankiCards); i++{
 		dc := ankiCards[i]
-		_, err := buildMemCardFromAnkiCard(dc)
+		newCard, err := buildMemCardFromAnkiCard(dc, o)
 		if err != nil{
 			return err
+		}else{
+			newCard.Did = newDir.Id
+			o.Update(newCard)
 		}
 	}
 	return nil
@@ -265,7 +271,7 @@ func copyCards(deck *AnkiDeck, newDir *Deck, user *User, o orm.Ormer) error{
 
 func GetRootDirs(user *User) ([]*Deck, error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable("klg_dir")
+	qs := o.QueryTable("deck")
 	dirs := []*Deck{}
 	_, err := qs.Filter("user_id", user.Id).All(&dirs)
 	return dirs, err
@@ -312,5 +318,6 @@ func CopyAnkiDeckToMemPlus(user *User) error {
 			return nil
 		}
 	}
+	o.Commit()
 	return nil
 }

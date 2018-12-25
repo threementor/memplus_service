@@ -16,6 +16,7 @@ func main() {
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
+		orm.Debug = true
 	}
 
 	cnf, err := config.NewConfig("ini", "./conf/app.conf")
@@ -30,7 +31,6 @@ func main() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.DefaultRowsLimit = 100000000
     orm.RegisterDataBase("default", "mysql", mysql_config)
-	orm.Debug = cnf.DefaultBool("debug", false)
 
 	beego.Run()
 }

@@ -164,6 +164,7 @@ func (c *KlgDirController) GetAll() {
 				c.Data["json"] = err.Error()
 			}
 		} else {
+			models.RefreshDeckCount(l)
 			c.Data["json"] = l
 		}
 

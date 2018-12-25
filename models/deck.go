@@ -14,6 +14,10 @@ type Deck struct {
 	Title     string `orm:"column(title);size(200);null"`
 	ParentId  int    `orm:"column(parent_id);null"`
 	UserId int    `orm:"column(user_id);null"`
+	AllCardCount int
+	OwnCardCount int
+	ReadyCount int
+	NewCount int
 }
 
 func (t *Deck) TableName() string {
@@ -219,6 +223,14 @@ func GetSubDirs(this *Deck, with_self bool)([]*Deck, error){
 	return childs, nil
 }
 
+func GetSonCard(this *Deck)([]*Card){
+	cards := []*Card{}
+	o := orm.NewOrm()
+	qs := o.QueryTable("card")
+	qs.Filter("did", this.Id).All(&cards)
+	return cards
+}
+
 
 func GetCards(this *Deck)([]*Card, error){
 	//先获取所有子目录的id
@@ -356,4 +368,47 @@ func CopyAnkiDeckToMemPlus(user *User) error {
 	}
 	o.Commit()
 	return nil
+}
+
+func RefreshCount(deck *Deck,handled map[int]*Deck, o orm.Ormer) *Deck {
+	if d, ok := handled[deck.Id]; ok{
+		return d
+	}
+	son_cards := GetSonCard(deck)
+	deck.OwnCardCount = len(son_cards)
+	deck.ReadyCount = 0
+	deck.NewCount = 0
+
+	for i:=0; i<len(son_cards); i++{
+		c := son_cards[i]
+		if IsReadyCard(c){
+			deck.ReadyCount += 1
+		}
+		if IsNewCard(c){
+			deck.NewCount += 1
+		}
+	}
+	deck.AllCardCount = deck.OwnCardCount
+
+	sons := GetSons(deck, o)
+
+	for i:=0; i<len(sons); i++{
+		son := RefreshCount(sons[i], handled, o)
+		deck.AllCardCount += son.AllCardCount
+		deck.NewCount += son.NewCount
+		deck.ReadyCount += son.ReadyCount
+	}
+	handled[deck.Id] = deck
+	o.Update(deck)
+	return deck
+}
+
+func RefreshDeckCount(l []interface {}){
+	hasHandle := map[int]*Deck{}
+	o := orm.NewOrm()
+
+	for i:=0; i<len(l); i++{
+		deck := l[i].(Deck)
+		RefreshCount(&deck, hasHandle, o)
+	}
 }

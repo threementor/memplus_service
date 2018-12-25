@@ -258,3 +258,12 @@ func SosoCard(id int) (task *Card, err error) {
 	}
 	return
 }
+
+func IsReadyCard(this *Card)bool{
+	now := time.Now()
+	return this.NextTrigger.Unix() > now.Unix()
+}
+
+func IsNewCard(this *Card)bool{
+	return this.Level == 0
+}

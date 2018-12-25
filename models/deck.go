@@ -409,6 +409,7 @@ func RefreshDeckCount(l []interface {}){
 
 	for i:=0; i<len(l); i++{
 		deck := l[i].(Deck)
-		RefreshCount(&deck, hasHandle, o)
+		newDeck := RefreshCount(&deck, hasHandle, o)
+		l[i] = newDeck
 	}
 }

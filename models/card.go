@@ -20,7 +20,6 @@ type Card struct {
 	NextTrigger    time.Time `orm:"column(trigger_start_time);type(timestamp);null"`
 	Note           *Note     `orm:"rel(one);column(nid);null"`
 	Loop           *Loop     `orm:"rel(one);column(loop_id);null"`
-	UserId         uint      `orm:"column(user_id);null"`
 	Finish         bool      `orm:"column(finish);null"`
 	Did            int       `orm:"column(did);null"`
 }

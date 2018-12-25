@@ -217,7 +217,7 @@ func (c *KlgDirController) Put() {
 	id, _ := strconv.Atoi(idStr)
 	v := models.Deck{Id: id}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if err := models.UpdateKlgDirById(&v); err == nil {
+		if err := models.UpdateDeckById(&v); err == nil {
 			c.Data["json"] = "OK"
 		} else {
 			c.Data["json"] = err.Error()

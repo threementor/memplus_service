@@ -123,14 +123,25 @@ func GetAllKlgDir(query map[string]string, fields []string, sortby []string, ord
 
 // UpdateKlgDir updates Deck by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateKlgDirById(m *Deck) (err error) {
+func UpdateDeckById(m *Deck) (err error) {
 	o := orm.NewOrm()
 	v := Deck{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
+		o.Begin()
 		if num, err = o.Update(m); err == nil {
 			fmt.Println("Number of records updated in database:", num)
+		}
+		hasCycle, err := CycleCheck(&v, o)
+		if err != nil{
+			return err
+		}
+		if hasCycle{
+			o.Rollback()
+			return errors.New("牌组有环")
+		}else{
+			o.Commit()
 		}
 	}
 	return
@@ -140,7 +151,7 @@ func UpdateKlgDirById(m *Deck) (err error) {
 // the record to be deleted doesn't exist
 func DeleteKlgDir(id int) (err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable("card")
+	qs := o.QueryTable("deck")
 	child_count, err := qs.Filter("parent_id", id).Count()
 	if err != nil{
 		return err
@@ -158,6 +169,31 @@ func DeleteKlgDir(id int) (err error) {
 		}
 	}
 	return
+}
+
+func CycleCheck(this *Deck, o orm.Ormer) (bool, error) {
+	childs := GetSons(this, o)
+	hasShow := map[int]int {this.Id: 1}
+
+	for len(childs) > 0{
+		pop := childs[0]
+		childs = childs[1:]
+		if hasShow[pop.Id] == 1{
+			return true, nil
+		}else{
+			hasShow[pop.Id] = 1
+		}
+		newChilds := GetSons(pop, o)
+		childs = append(childs, newChilds...)
+	}
+	return false, nil
+}
+
+func GetSons(this *Deck, o orm.Ormer)[]*Deck{
+	sons := []*Deck{}
+	qs := o.QueryTable("deck")
+	qs.Filter("parent_id", this.Id).All(&sons)
+	return sons
 }
 
 func GetSubDirs(this *Deck, with_self bool)([]*Deck, error){

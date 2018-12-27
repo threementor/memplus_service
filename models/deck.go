@@ -326,7 +326,7 @@ func GetRootDirs(user *User) ([]*Deck, error) {
 }
 
 
-func CopyAnkiDeckToMemPlus(user *User) error {
+func CopyAnkiDeckToMemPlus(trade *Trade, user *User) error {
 	o := orm.NewOrm()
 	o.Begin()
 	qs := o.QueryTable("anki_deck")
@@ -366,6 +366,8 @@ func CopyAnkiDeckToMemPlus(user *User) error {
 			return nil
 		}
 	}
+	trade.Status = "finish"
+	o.Update(trade)
 	o.Commit()
 	return nil
 }

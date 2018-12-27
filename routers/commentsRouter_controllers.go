@@ -407,6 +407,46 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
+	beego.GlobalControllerRouter["memplus_service/controllers:ProductController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:ProductController"],
+		beego.ControllerComments{
+			Method: "Post",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:ProductController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:ProductController"],
+		beego.ControllerComments{
+			Method: "GetAll",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:ProductController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:ProductController"],
+		beego.ControllerComments{
+			Method: "GetOne",
+			Router: `/:id`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:ProductController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:ProductController"],
+		beego.ControllerComments{
+			Method: "Put",
+			Router: `/:id`,
+			AllowHTTPMethods: []string{"put"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:ProductController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:ProductController"],
+		beego.ControllerComments{
+			Method: "SubmitTrade",
+			Router: `/:id/submit_trade`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams: param.Make(),
+			Params: nil})
+
 	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
 			Method: "Post",
@@ -449,6 +489,14 @@ func init() {
 
 	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
 		beego.ControllerComments{
+			Method: "Pay",
+			Router: `/:id/pay`,
+			AllowHTTPMethods: []string{"put"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
+		beego.ControllerComments{
 			Method: "Notify",
 			Router: `/alipay_notify`,
 			AllowHTTPMethods: []string{"post"},
@@ -459,14 +507,6 @@ func init() {
 		beego.ControllerComments{
 			Method: "Return",
 			Router: `/alipay_return`,
-			AllowHTTPMethods: []string{"get"},
-			MethodParams: param.Make(),
-			Params: nil})
-
-	beego.GlobalControllerRouter["memplus_service/controllers:TradeController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:TradeController"],
-		beego.ControllerComments{
-			Method: "Pay",
-			Router: `/pay`,
 			AllowHTTPMethods: []string{"get"},
 			MethodParams: param.Make(),
 			Params: nil})

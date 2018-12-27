@@ -188,7 +188,6 @@ func (u *UserController) Login() {
 	password := u.GetString("password")
 	fmt.Println(username, password)
 	user, err := models.Login(username, password)
-	fmt.Println(err)
 	if err == nil {
 		u.SetSession("uid", user.Id)
 		u.Data["json"] = map[string]interface{}{"success": true, "userName": username}
@@ -203,7 +202,7 @@ func (u *UserController) Login() {
 // @Success 200 {string} logout success
 // @router /logout [get]
 func (u *UserController) Logout() {
-	u.DelSession("uid")
+	u.DestroySession()
 	u.Data["json"] = map[string]interface{}{"success": true}
 	u.ServeJSON()
 }

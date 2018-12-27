@@ -3,14 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/astaxie/beego/orm"
+	"github.com/smartwalle/alipay"
 	"memplus_service/models"
 	"strconv"
 	"strings"
-	"github.com/smartwalle/alipay"
-	"fmt"
-	"github.com/astaxie/beego/orm"
-	"github.com/satori/go.uuid"
-
 )
 
 
@@ -93,7 +91,7 @@ func (c *TradeController) GetOne() {
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
-		c.Data["json"] = v
+		c.Data["json"] = v.AsMap()
 	}
 	c.ServeJSON()
 }
@@ -117,7 +115,12 @@ func (c *TradeController) GetAll() {
 	var query = make(map[string]string)
 	var limit int64 = 10
 	var offset int64
-
+	u, err := c.GetUser()
+	if err != nil{
+		c.Abort("401")
+		return
+	}
+	query["user_id"] = fmt.Sprintf("%v", u.Id)
 	// fields: col1,col2,entity.col3
 	if v := c.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
@@ -156,6 +159,12 @@ func (c *TradeController) GetAll() {
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
+		o := orm.NewOrm()
+		for i:=0; i<len(l); i++{
+			c := l[i].(models.Trade)
+			o.LoadRelated(&c, "product")
+			l[i] = c.AsMap()
+		}
 		c.Data["json"] = l
 	}
 	c.ServeJSON()
@@ -203,46 +212,50 @@ func (c *TradeController) Delete() {
 	c.ServeJSON()
 }
 
-// @router /pay
-func (c *TradeController) Pay(){
-	var p = alipay.AliPayTradePagePay{}
+
+func GetPayInfo(trade *models.Trade)(map[string]interface{}, error){
+	o := orm.NewOrm()
+	o.LoadRelated(trade, "product_id")
 	host := GetHostName()
+	var p = alipay.AliPayTradePagePay{}
 	p.NotifyURL = fmt.Sprintf("%v/v1/trade/alipay_notify", host)
 	p.ReturnURL = fmt.Sprintf("%v/v1/trade/alipay_return", host)
-
-	user, err := c.GetUser()
-	u1, err := uuid.NewV4()
-	if err != nil{
-		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
-		c.ServeJSON()
-		return
-	}
-
-	uid := fmt.Sprintf("%s", u1)
-	trade := models.Trade{UserId: user.Id, TradeNo: uid}
-
-	o := orm.NewOrm()
-	_, err = o.Insert(&trade)
-
-	if err != nil{
-		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
-		c.ServeJSON()
-		return
-	}
-
-	p.Subject = "高考题库"
-	p.OutTradeNo = uid
-	p.TotalAmount = "0.01"
+	p.Subject = trade.Product.Title
+	p.OutTradeNo = trade.TradeNo
+	p.TotalAmount = fmt.Sprintf("%v", trade.Amount)
 	p.ProductCode = "FAST_INSTANT_TRADE_PAY"
-
 	url, err := client.TradePagePay(p)
-	if err != nil {
-		fmt.Println(err)
-	}
 
+	if err != nil {
+		return nil, err
+	}
 	var payURL = url.String()
-	fmt.Println("url", payURL)
-	c.Data["json"] = map[string]interface{}{"success": true, "url": payURL}
+	return map[string]interface{}{"alipay": payURL}, nil
+}
+
+// Put ...
+// @Title Put
+// @Description update the Trade
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.Trade	true		"body for Trade content"
+// @Success 200 {object} models.Trade
+// @Failure 403 :id is not int
+// @router /:id/pay [put]
+func (c *TradeController) Pay() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	trade, err := models.GetTradeById(id)
+
+	if err != nil {
+		c.Data["json"] = err.Error()
+		return
+	}
+	payInfo, err := GetPayInfo(trade)
+	if err != nil{
+		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
+	}else{
+		c.Data["json"] = map[string]interface{}{"success": true, "data": payInfo}
+	}
 	c.ServeJSON()
 }
 
@@ -288,20 +301,21 @@ func markRecordPaySuccess(s string) error {
 	}
 
 	o.Read(&trade)
-	fmt.Println(trade.Active)
-	if trade.Active != 1{
-		trade.Active = 1
+	if trade.Pay != models.TRADE_PAY_PAID{
+		trade.Pay = models.TRADE_PAY_PAID
+		trade.Status = models.TRADE_STATUS_INITING
 		o.Update(&trade)
 		user, err := models.GetUsersById(trade.UserId)
 		if err == nil{
 			fmt.Println("copy record")
-			go models.CopyAnkiDeckToMemPlus(user)
+			go models.CopyAnkiDeckToMemPlus(&trade, user)
 			return err
 		}else{
+			trade.Status = "fail"
+			o.Update(&trade)
 			return err
 		}
 	}
-
 	return nil
 }
 

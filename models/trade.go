@@ -3,21 +3,78 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
-
-	"github.com/astaxie/beego/orm"
+	"time"
 )
 
 type Trade struct {
 	Id     int  `orm:"column(id);auto"`
 	UserId int  `orm:"column(user_id);null"`
-	Active int8 `orm:"column(active);null"`
+	Pay int `orm:"column(pay);null"`
+	Status string `orm:"column(status);null"`
 	TradeNo string `orm:"column(trade_no);null"`
+	Product *Product `orm:"rel(one);column(product_id);null"`
+	CreateTime time.Time `orm:"column(ct);type(timestamp);null"`
+	PayTime time.Time `orm:"column(pt);type(timestamp);null"`
+	Amount float32 `orm:"column(amount);null"`
 }
+
+//pay
+var TRADE_PAY_PAID = 1
+var TRADE_PAY_NO_PAID = 0
+var TRADE_PAY_BACK = -1
+
+var pay_map = map[int][]string{
+	TRADE_PAY_NO_PAID: []string{"未付款", "unpay"},
+	TRADE_PAY_PAID: []string{"已付款", "paid"},
+	TRADE_PAY_BACK: []string{"已退款", "back"},
+}
+
+//status
+var TRADE_STATUS_INITING = "initing"
+var TRADE_STATUS_FINISH = "finish"
+
+
+var trade_map = map[string]string{
+	TRADE_STATUS_INITING: "发货中",
+	TRADE_STATUS_FINISH: "已交付",
+}
+
 
 func (t *Trade) TableName() string {
 	return "trade"
+}
+
+func (t *Trade) AsMap() map[string]interface{} {
+	o := orm.NewOrm()
+	o.LoadRelated(t, "product_id")
+	m := map[string]interface{}{}
+	m["Id"] = t.Id
+	payInfo, ok := pay_map[t.Pay]
+	if ok{
+		m["pay"] = payInfo[1]
+		m["payHuman"] = payInfo[0]
+	}else{
+		m["pay"] = t.Pay
+		m["payHuman"] = t.Pay
+	}
+
+	m["status"] = t.Status
+	tradeStatus, ok := trade_map[t.Status]
+	if ok{
+		m["statusHuman"] = tradeStatus
+	}else{
+		m["statusHuman"] = t.Status
+	}
+
+	m["tradeNo"] = t.TradeNo
+	m["product"] = t.Product
+	m["payTime"] = t.PayTime.Format("2006-01-02 15:04:05")
+	m["createTime"] = t.CreateTime.Format("2006-01-02 15:04:05")
+	m["amount"] = t.Amount
+	return m
 }
 
 func init() {
@@ -150,3 +207,4 @@ func DeleteTrade(id int) (err error) {
 	}
 	return
 }
+

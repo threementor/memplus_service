@@ -28,10 +28,13 @@ func init() {
 	orm.RegisterModel(new(Deck))
 }
 
-// AddKlgDir insert a new Deck into database and returns
+// AddDeck insert a new Deck into database and returns
 // last inserted Id on success.
-func AddKlgDir(m *Deck) (id int64, err error) {
+func AddDeck(m *Deck) (id int64, err error) {
 	o := orm.NewOrm()
+	if m.Title == ""{
+		return 0, errors.New("名称不能为空")
+	}
 	id, err = o.Insert(m)
 	return
 }

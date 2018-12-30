@@ -222,13 +222,12 @@ func (c *CardController) Delete() {
 func (c *CardController) Forget() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	task, err := models.ForgetCard(id)
+	card, err := models.ForgetCard(id)
 	if err == nil {
-		c.Data["json"] = map[string]interface{}{"success": true, "data": task}
+		c.SendSuccess(card)
 	} else {
-		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
+		c.SendError(err)
 	}
-	c.ServeJSON()
 }
 
 // Put ...
@@ -241,13 +240,12 @@ func (c *CardController) Forget() {
 func (c *CardController) Soso() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	task, err := models.SosoCard(id)
+	card, err := models.SosoCard(id)
 	if err == nil {
-		c.Data["json"] = map[string]interface{}{"success": true, "data": task}
+		c.SendSuccess(card)
 	} else {
-		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
+		c.SendError(err)
 	}
-	c.ServeJSON()
 }
 
 // Put ...
@@ -260,11 +258,10 @@ func (c *CardController) Soso() {
 func (c *CardController) Remember() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	task, err := models.RememberCard(id)
+	card, err := models.RememberCard(id)
 	if err == nil {
-		c.Data["json"] = map[string]interface{}{"success": true, "data": task}
+		c.SendSuccess(card)
 	} else {
-		c.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
+		c.SendError(err)
 	}
-	c.ServeJSON()
 }

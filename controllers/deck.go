@@ -38,19 +38,17 @@ func (c *KlgDirController) Post() {
 			c.Data["json"] = err.Error()
 		}else{
 			v.UserId = user.Id
-			if _, err := models.AddKlgDir(&v); err == nil {
-				c.Ctx.Output.SetStatus(201)
-				c.Data["json"] = v
+			if _, err := models.AddDeck(&v); err == nil {
+				c.SendSuccess(v)
 			} else {
-				c.Data["json"] = err.Error()
+				c.SendError(err)
 			}
 		}
 
 
 	} else {
-		c.Data["json"] = err.Error()
+		c.SendError(err)
 	}
-	c.ServeJSON()
 }
 
 

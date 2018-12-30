@@ -137,6 +137,14 @@ func init() {
 
 	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
+			Method: "UpdateNote",
+			Router: `/:id/note`,
+			AllowHTTPMethods: []string{"put"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
+		beego.ControllerComments{
 			Method: "Remember",
 			Router: `/:id/remember`,
 			AllowHTTPMethods: []string{"put"},
@@ -228,6 +236,14 @@ func init() {
 			Method: "Delete",
 			Router: `/:id`,
 			AllowHTTPMethods: []string{"delete"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:KlgDirController"],
+		beego.ControllerComments{
+			Method: "AddCardToDeck",
+			Router: `/:id/create/card`,
+			AllowHTTPMethods: []string{"post"},
 			MethodParams: param.Make(),
 			Params: nil})
 

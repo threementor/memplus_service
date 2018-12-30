@@ -9,6 +9,7 @@ import (
 	"memplus_service/models"
 	"strconv"
 	"strings"
+	"time"
 )
 
 
@@ -304,6 +305,7 @@ func markRecordPaySuccess(s string) error {
 	if trade.Pay != models.TRADE_PAY_PAID{
 		trade.Pay = models.TRADE_PAY_PAID
 		trade.Status = models.TRADE_STATUS_INITING
+		trade.PayTime = time.Now()
 		o.Update(&trade)
 		user, err := models.GetUsersById(trade.UserId)
 		if err == nil{

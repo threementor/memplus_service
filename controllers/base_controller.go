@@ -1,8 +1,9 @@
 package controllers
+
 import (
+	"errors"
 	"github.com/astaxie/beego"
 	"memplus_service/models"
-	"errors"
 )
 
 type LoginRequirePrepare interface {
@@ -37,6 +38,30 @@ func (this *BaseController) Prepare() {
 	}
 }
 
+func (this *BaseController) GetUser() (*models.User, error){
+	user, ok := this.Data["user"]
+	if !ok{
+		return nil, errors.New("user not in data")
+	}
+	if u, ok := user.(*models.User); ok{
+		return u, nil
+	}else{
+		return nil, errors.New("cover user fail")
+	}
+}
+
+
+func (this *BaseController) SendSuccess(data interface{}){
+	this.Data["json"] = map[string]interface{}{"code": 200, "data": data}
+	this.ServeJSON()
+}
+
+
+func (this *BaseController) SendError(err error){
+	this.Data["json"] = map[string]interface{}{"code": -1, "msg": err.Error()}
+	this.ServeJSON()
+}
+
 
 type LoginReqireController struct{
 	BaseController
@@ -52,15 +77,3 @@ func (this *LoginReqireController) LoginRequirePrepare(){
 	}
 }
 
-
-func (this *BaseController) GetUser() (*models.User, error){
-	user, ok := this.Data["user"]
-	if !ok{
-		return nil, errors.New("user not in data")
-	}
-	if u, ok := user.(*models.User); ok{
-		return u, nil
-	}else{
-		return nil, errors.New("cover user fail")
-	}
-}

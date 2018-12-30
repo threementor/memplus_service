@@ -29,10 +29,13 @@ func init() {
 
 // AddUsers insert a new Users into database and returns
 // last inserted Id on success.
-func AddUsers(m *User) (id int64, err error) {
+func AddUsers(m *User) (int64, error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
-	return
+	if strings.Count(m.Name, "") < 6{
+		return 0, errors.New("用户名不能小于6位")
+	}
+	id, err := o.Insert(m)
+	return id, err
 }
 
 // GetUsersById retrieves User by Id. Returns error if

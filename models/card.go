@@ -46,6 +46,7 @@ func GetCardById(id int) (v *Card, err error) {
 	o := orm.NewOrm()
 	v = &Card{Id: id}
 	if err = o.Read(v); err == nil {
+		o.LoadRelated(v, "nid")
 		return v, nil
 	}
 	return nil, err

@@ -6,13 +6,11 @@ import (
 	"memplus_service/models"
 	"strconv"
 	"strings"
-
-	"github.com/astaxie/beego"
 )
 
 // CardController operations for Card
 type CardController struct {
-	beego.Controller
+	BaseController
 }
 
 // URLMapping ...
@@ -70,9 +68,9 @@ func (c *CardController) GetOne() {
 	id, _ := strconv.Atoi(idStr)
 	v, err := models.GetCardById(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = map[string]interface{}{"msg": err.Error(), "success": false}
 	} else {
-		c.Data["json"] = v
+		c.Data["json"] = map[string]interface{}{"data": v, "success": false}
 	}
 	c.ServeJSON()
 }
@@ -164,6 +162,37 @@ func (c *CardController) Put() {
 	c.ServeJSON()
 }
 
+
+// Put ...
+// @Title Put
+// @Description update the Note
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.Card	true		"body for Card content"
+// @Success 200 {object} models.Card
+// @Failure 403 :id is not int
+// @router /:id/note [put]
+func (c *CardController) UpdateNote() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	card, err := models.GetCardById(id)
+
+	if err != nil{
+		c.SendError(errors.New("获取卡片失败"))
+		return
+	}
+
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, card.Note); err == nil {
+		if err := models.UpdateNoteById(card.Note); err == nil {
+			c.SendSuccess("OK")
+		} else {
+			c.SendError(err)
+		}
+	} else {
+		c.SendError(err)
+	}
+}
+
+
 // Delete ...
 // @Title Delete
 // @Description delete the Card
@@ -181,7 +210,6 @@ func (c *CardController) Delete() {
 	}
 	c.ServeJSON()
 }
-
 
 
 // Put ...

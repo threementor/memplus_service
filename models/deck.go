@@ -36,9 +36,9 @@ func AddKlgDir(m *Deck) (id int64, err error) {
 	return
 }
 
-// GetKlgDirById retrieves Deck by Id. Returns error if
+// GetDeckById retrieves Deck by Id. Returns error if
 // Id doesn't exist
-func GetKlgDirById(id int) (v *Deck, err error) {
+func GetDeckById(id int) (v *Deck, err error) {
 	o := orm.NewOrm()
 	v = &Deck{Id: id}
 	if err = o.Read(v); err == nil {
@@ -47,9 +47,9 @@ func GetKlgDirById(id int) (v *Deck, err error) {
 	return nil, err
 }
 
-// GetAllKlgDir retrieves all Deck matches certain condition. Returns empty list if
+// GetAllDeck retrieves all Deck matches certain condition. Returns empty list if
 // no records exist
-func GetAllKlgDir(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllDeck(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Deck))
@@ -151,9 +151,9 @@ func UpdateDeckById(m *Deck) (err error) {
 	return
 }
 
-// DeleteKlgDir deletes Deck by Id and returns error if
+// DeleteDeck deletes Deck by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteKlgDir(id int) (err error) {
+func DeleteDeck(id int) (err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable("deck")
 	child_count, err := qs.Filter("parent_id", id).Count()

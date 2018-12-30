@@ -32,6 +32,9 @@ func init() {
 // last inserted Id on success.
 func AddNote(m *Note) (id int64, err error) {
 	o := orm.NewOrm()
+	if m.Title == ""{
+		return 0, errors.New("标题不能为空")
+	}
 	id, err = o.Insert(m)
 	return
 }

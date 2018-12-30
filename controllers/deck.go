@@ -63,7 +63,7 @@ func (c *KlgDirController) Post() {
 func (c *KlgDirController) GetReadyTasks(){
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	dir, err := models.GetKlgDirById(id)
+	dir, err := models.GetDeckById(id)
 	if err != nil{
 		c.Data["json"] = err.Error()
 		c.ServeJSON()
@@ -90,7 +90,7 @@ func (c *KlgDirController) GetReadyTasks(){
 func (c *KlgDirController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetKlgDirById(id)
+	v, err := models.GetDeckById(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -156,7 +156,7 @@ func (c *KlgDirController) GetAll() {
 	user, err := c.GetUser()
 	if err == nil{
 		query["user_id"] = fmt.Sprintf("%v", user.Id)
-		l, err := models.GetAllKlgDir(query, fields, sortby, order, offset, limit)
+		l, err := models.GetAllDeck(query, fields, sortby, order, offset, limit)
 		if err != nil {
 			if err.Error() == "<QuerySeter> no row found"{
 				c.Data["json"] = [][]string{}
@@ -239,10 +239,55 @@ func (c *KlgDirController) Put() {
 func (c *KlgDirController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	if err := models.DeleteKlgDir(id); err == nil {
+	if err := models.DeleteDeck(id); err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
+
+
+// Put ...
+// @Title Put
+// @Description update the Deck
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.Deck	true		"body for Deck content"
+// @Success 200 {object} models.Deck
+// @Failure 403 :id is not int
+// @router /:id/create/card [post]
+func (c *KlgDirController) AddCardToDeck() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	_, err := models.GetDeckById(id)
+	if err != nil{
+		c.Data["json"] = fmt.Sprintf("获取牌组失败。%v", err.Error())
+		c.ServeJSON()
+		return
+	}
+	var note models.Note
+	var card models.Card
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &note); err == nil {
+		if nid, err := models.AddNote(&note); err == nil {
+			note.Id = int(nid)
+			if err := json.Unmarshal(c.Ctx.Input.RequestBody, &card); err == nil {
+				card.Loop = &models.Loop{Id: 1}
+				card.Note = &note
+				card.Did = id
+				if _, err = models.AddCard(&card); err == nil {
+					c.Ctx.Output.SetStatus(201)
+					c.Data["json"] = "OK"
+				} else {
+					c.Data["json"] = fmt.Sprintf("添加card失败。%v", err.Error())
+				}
+			}else{
+				c.Data["json"] = fmt.Sprintf("解析card失败。%v", err.Error())
+			}
+		}else{
+			c.Data["json"] = fmt.Sprintf("添加note失败。%v", err.Error())
+		}
+	} else {
+		c.Data["json"] = fmt.Sprintf("解析note失败。%v", err.Error())
 	}
 	c.ServeJSON()
 }

@@ -18,6 +18,7 @@ type Note struct {
 	Title     string    `orm:"column(title);null"`
 	Content   string    `orm:"column(content);null"`
 	Type      string    `orm:"column(type);size(11);null"`
+	Did      int    `orm:"column(did);size(11);null"`
 }
 
 func (t *Note) TableName() string {

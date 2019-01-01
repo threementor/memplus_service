@@ -13,11 +13,8 @@ type Deck struct {
 	Id        int    `orm:"column(id);auto"`
 	Title     string `orm:"column(title);size(200);null"`
 	ParentId  int    `orm:"column(parent_id);null"`
-	UserId int    `orm:"column(user_id);null"`
 	AllCardCount int
 	OwnCardCount int
-	ReadyCount int
-	NewCount int
 }
 
 func (t *Deck) TableName() string {
@@ -299,24 +296,23 @@ func buildMemCardFromAnkiCard(ankiCard *AnkiCard, o orm.Ormer) (*Card, error){
 }
 
 func copyCards(deck *AnkiDeck, newDir *Deck, user *User, o orm.Ormer) error{
-	//1 拿出来所有的anki card ， anki deck
-	//2 根据anki card制作出 mem card
-	//3. 根据 anki deck 制作出 mem deck
 	ankiCards := []*AnkiCard{}
 	qs := o.QueryTable("anki_card")
 	qs.Filter("did", deck.DeckId).All(&ankiCards)
 
+	//批量插入notes
+	notes := []*Note{}
 	for i:=0; i<len(ankiCards); i++{
 		dc := ankiCards[i]
-		newCard, err := buildMemCardFromAnkiCard(dc, o)
-		if err != nil{
-			return err
-		}else{
-			newCard.Did = newDir.Id
-			o.Update(newCard)
-		}
+		note := Note{Title: dc.Q, Content: dc.A, Type: "anki", Did: newDir.Id}
+		notes = append(notes, &note)
 	}
-	return nil
+	o.InsertMulti(len(notes), notes)
+
+	//根据notes批量插入cards
+	sql := fmt.Sprintf("insert into card (level, nid, did, finish) select 0, id, did, 0 from note where did=%v", newDir.Id)
+	_, err := o.Raw(sql).Exec()
+	return err
 }
 
 
@@ -330,6 +326,10 @@ func GetRootDirs(user *User) ([]*Deck, error) {
 
 
 func CopyAnkiDeckToMemPlus(trade *Trade, user *User) error {
+	//先copy新deck
+	//批量插入note
+	//批量生成cards
+
 	o := orm.NewOrm()
 	o.Begin()
 	qs := o.QueryTable("anki_deck")
@@ -349,13 +349,20 @@ func CopyAnkiDeckToMemPlus(trade *Trade, user *User) error {
 		if len(names) > 1{
 			name = names[len(names)-1]
 		}
-		newDir := &Deck{Title: name, UserId: user.Id}
-		_, err := o.Insert(newDir)
+		newDir := &Deck{Title: name}
+		did, err := o.Insert(newDir)
+
+		newDir.Id = int(did)
+		rela := UserDeckRela{Uid: user.Id, Deck: &Deck{Id: newDir.Id}}
+		_, err = o.Insert(&rela)
+
 		if err != nil{
 			return err
 		}
 		newDirs[deck.DeckId] = newDir
 	}
+
+	success := true
 	//copy deck
 	for deckId, newDir := range newDirs{
 		deck := deckMap[deckId]
@@ -366,55 +373,83 @@ func CopyAnkiDeckToMemPlus(trade *Trade, user *User) error {
 		}
 		err := copyCards(deck, newDir, user, o)
 		if err != nil{
-			return nil
+			success = false
 		}
 	}
-	trade.Status = "finish"
+	if success{
+		trade.Status = "finish"
+	}else{
+		trade.Status = "fail"
+	}
 	o.Update(trade)
 	o.Commit()
 	return nil
 }
 
-func RefreshCount(deck *Deck,handled map[int]*Deck, o orm.Ormer) *Deck {
-	if d, ok := handled[deck.Id]; ok{
-		return d
-	}
-	son_cards := GetSonCard(deck)
-	deck.OwnCardCount = len(son_cards)
-	deck.ReadyCount = 0
-	deck.NewCount = 0
+func refreshDeck(rela *UserDeckRela, o orm.Ormer, handles map[int]*UserDeckRela) (*UserDeckRela, error){
 
-	for i:=0; i<len(son_cards); i++{
-		c := son_cards[i]
-		if IsReadyCard(c){
-			deck.ReadyCount += 1
+	if d, ok := handles[rela.Id]; ok{
+		return d, nil
+	}
+	o.LoadRelated(rela, "did")
+	qs := o.QueryTable("card").Filter("did", rela.Deck.Id)
+	cardsCount, err := qs.Count()
+	if err != nil{
+		return nil, err
+	}
+
+	newCount, err := qs.Filter("level", 0).Count()
+	if err != nil{
+		return nil, err
+	}
+	now := time.Now()
+	readyCount, err := qs.Filter("trigger_start_time__lt", now).Count()
+	if err != nil{
+		return nil, err
+	}
+
+	rela.ReadyCount = int(readyCount)
+	rela.NewCount = int(newCount)
+	rela.Deck.OwnCardCount = int(cardsCount)
+	rela.Deck.AllCardCount = int(cardsCount)
+
+	son_decks := GetSons(rela.Deck, o)
+	son_deck_ids := []int{}
+	for i:=0; i<len(son_decks); i++{
+		dc := son_decks[i]
+		son_deck_ids = append(son_deck_ids, dc.Id)
+	}
+	son_rela_deck := []*UserDeckRela{}
+	if len(son_deck_ids) > 0{
+		o.QueryTable(TABLE_USER_DECK_RELA).Filter("did__in", son_deck_ids).Filter("uid", rela.Uid).All(&son_rela_deck)
+		for i:=0; i<len(son_rela_deck); i++{
+			son := son_rela_deck[i]
+			son, err = refreshDeck(son, o, handles)
+			if err != nil{
+				return nil, err
+			}
+			rela.ReadyCount += son.ReadyCount
+			rela.NewCount += son.NewCount
+			rela.Deck.AllCardCount += son.Deck.AllCardCount
+			fmt.Println(rela.Deck.Title, son.Deck.Title, son.Deck.AllCardCount)
 		}
-		if IsNewCard(c){
-			deck.NewCount += 1
-		}
 	}
-	deck.AllCardCount = deck.OwnCardCount
 
-	sons := GetSons(deck, o)
-
-	for i:=0; i<len(sons); i++{
-		son := RefreshCount(sons[i], handled, o)
-		deck.AllCardCount += son.AllCardCount
-		deck.NewCount += son.NewCount
-		deck.ReadyCount += son.ReadyCount
-	}
-	handled[deck.Id] = deck
-	o.Update(deck)
-	return deck
+	o.Update(rela)
+	o.Update(rela.Deck)
+	handles[rela.Id] = rela
+	return rela, nil
 }
 
-func RefreshDeckCount(l []interface {}){
-	hasHandle := map[int]*Deck{}
+func RefreshCount(relas []*UserDeckRela) {
 	o := orm.NewOrm()
+	handles := map[int]*UserDeckRela{}
+	for i:=0; i<len(relas); i++{
+		_, err := refreshDeck(relas[i], o, handles)
+		if err != nil{
+			fmt.Println(err.Error())
+		}
 
-	for i:=0; i<len(l); i++{
-		deck := l[i].(Deck)
-		newDeck := RefreshCount(&deck, hasHandle, o)
-		l[i] = newDeck
 	}
+	return
 }

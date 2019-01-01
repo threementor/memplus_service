@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"github.com/astaxie/beego/orm"
 	"memplus_service/models"
 	"strconv"
 	"strings"
@@ -37,9 +38,14 @@ func (c *KlgDirController) Post() {
 		if err != nil{
 			c.Data["json"] = err.Error()
 		}else{
-			v.UserId = user.Id
-			if _, err := models.AddDeck(&v); err == nil {
-				c.SendSuccess(v)
+			if did, err := models.AddDeck(&v); err == nil {
+				rela := models.UserDeckRela{Uid: user.Id, Deck: &models.Deck{Id: int(did)}}
+				if rid, err := models.AddUserDeckRela(&rela); err == nil{
+					rela.Id = int(rid)
+					c.SendSuccess(rela.AsMap())
+				}else{
+					c.SendError(err)
+				}
 			} else {
 				c.SendError(err)
 			}
@@ -153,25 +159,45 @@ func (c *KlgDirController) GetAll() {
 
 	user, err := c.GetUser()
 	if err == nil{
-		query["user_id"] = fmt.Sprintf("%v", user.Id)
 		l, err := models.GetAllDeck(query, fields, sortby, order, offset, limit)
 		if err != nil {
 			if err.Error() == "<QuerySeter> no row found"{
-				c.Data["json"] = [][]string{}
+				c.SendSuccess([][]string{})
 			}else{
-				c.Data["json"] = err.Error()
+				c.SendError(err)
 			}
 		} else {
-			models.RefreshDeckCount(l)
-			c.Data["json"] = l
+			dids := []int{}
+			for i:=0; i<len(l); i++{
+				deck := l[i].(models.Deck)
+				dids = append(dids, deck.Id)
+			}
+			relas, err := GetDeckFromUser(dids, user)
+			go models.RefreshCount(relas)
+			if err == nil{
+				rst := []interface{}{}
+				for i:=0; i<len(relas); i++{
+					rst = append(rst, relas[i].AsMap())
+				}
+				c.SendSuccess(rst)
+			}else{
+				c.SendError(err)
+			}
 		}
 
 	}else{
-		c.Data["json"] = err.Error()
+		c.SendError(err)
 	}
-	c.ServeJSON()
 }
 
+
+func GetDeckFromUser(l []int, user *models.User)(nl []*models.UserDeckRela, err error){
+	o := orm.NewOrm()
+	relas := []*models.UserDeckRela{}
+	qs := o.QueryTable("user_deck_rela")
+	qs.Filter("did__in", l).Filter("uid", user.Id).All(&relas)
+	return relas, err
+}
 
 // GetAll ...
 // @Title Get Root Dirs

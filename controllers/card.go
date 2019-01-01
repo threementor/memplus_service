@@ -15,46 +15,12 @@ type CardController struct {
 
 // URLMapping ...
 func (c *CardController) URLMapping() {
-	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 }
 
-// Post ...
-// @Title Post
-// @Description create Card
-// @Param	body		body 	models.Card	true		"body for Card content"
-// @Success 201 {int} models.Card
-// @Failure 403 body is empty
-// @router / [post]
-func (c *CardController) Post() {
-	var note models.Note
-	var card models.Card
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &note); err == nil {
-		if nid, err := models.AddNote(&note); err == nil {
-			note.Id = int(nid)
-			if err := json.Unmarshal(c.Ctx.Input.RequestBody, &card); err == nil {
-				card.Loop = &models.Loop{Id: 1}
-				card.Note = &note
-				if _, err = models.AddCard(&card); err == nil {
-					c.Ctx.Output.SetStatus(201)
-
-					c.Data["json"] = card
-				}else{
-					c.Data["json"] = err.Error()
-				}
-			}
-
-		} else {
-			c.Data["json"] = err.Error()
-		}
-	} else {
-		c.Data["json"] = err.Error()
-	}
-	c.ServeJSON()
-}
 
 // GetOne ...
 // @Title Get One

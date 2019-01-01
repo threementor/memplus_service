@@ -292,6 +292,7 @@ func (c *KlgDirController) AddCardToDeck() {
 	var note models.Note
 	var card models.Card
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &note); err == nil {
+		note.Did = id
 		if nid, err := models.AddNote(&note); err == nil {
 			note.Id = int(nid)
 			if err := json.Unmarshal(c.Ctx.Input.RequestBody, &card); err == nil {

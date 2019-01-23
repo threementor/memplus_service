@@ -60,7 +60,7 @@ func init() {
 
 		beego.NSNamespace("/deck",
 			beego.NSInclude(
-				&controllers.KlgDirController{},
+				&controllers.DeckController{},
 			),
 		),
 

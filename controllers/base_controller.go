@@ -57,8 +57,11 @@ func (this *BaseController) SendSuccess(data interface{}){
 }
 
 
-func (this *BaseController) SendError(err error){
-	this.Data["json"] = map[string]interface{}{"code": -1, "msg": err.Error()}
+func (this *BaseController) SendError(err error, code int){
+	if err.Error() == "<QuerySeter> no row found"{
+		code = 404
+	}
+	this.Data["json"] = map[string]interface{}{"code": code, "msg": err.Error()}
 	this.ServeJSON()
 }
 

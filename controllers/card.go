@@ -143,7 +143,7 @@ func (c *CardController) UpdateNote() {
 	card, err := models.GetCardById(id)
 
 	if err != nil{
-		c.SendError(errors.New("获取卡片失败"))
+		c.SendError(errors.New("获取卡片失败"), -1)
 		return
 	}
 
@@ -151,10 +151,10 @@ func (c *CardController) UpdateNote() {
 		if err := models.UpdateNoteById(card.Note); err == nil {
 			c.SendSuccess("OK")
 		} else {
-			c.SendError(err)
+			c.SendError(err, -1)
 		}
 	} else {
-		c.SendError(err)
+		c.SendError(err, -1)
 	}
 }
 
@@ -192,7 +192,7 @@ func (c *CardController) Forget() {
 	if err == nil {
 		c.SendSuccess(card)
 	} else {
-		c.SendError(err)
+		c.SendError(err, -1)
 	}
 }
 
@@ -210,7 +210,7 @@ func (c *CardController) Soso() {
 	if err == nil {
 		c.SendSuccess(card)
 	} else {
-		c.SendError(err)
+		c.SendError(err, -1)
 	}
 }
 
@@ -228,6 +228,6 @@ func (c *CardController) Remember() {
 	if err == nil {
 		c.SendSuccess(card)
 	} else {
-		c.SendError(err)
+		c.SendError(err, -1)
 	}
 }

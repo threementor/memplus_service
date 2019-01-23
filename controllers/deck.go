@@ -10,13 +10,13 @@ import (
 	"fmt"
 )
 
-// KlgDirController operations for Deck
-type KlgDirController struct {
+// DeckController operations for Deck
+type DeckController struct {
 	LoginReqireController
 }
 
 // URLMapping ...
-func (c *KlgDirController) URLMapping() {
+func (c *DeckController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -31,7 +31,7 @@ func (c *KlgDirController) URLMapping() {
 // @Success 201 {int} models.Deck
 // @Failure 403 body is empty
 // @router / [post]
-func (c *KlgDirController) Post() {
+func (c *DeckController) Post() {
 	var v models.Deck
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
 		user, err := c.GetUser()
@@ -44,16 +44,16 @@ func (c *KlgDirController) Post() {
 					rela.Id = int(rid)
 					c.SendSuccess(rela.AsMap())
 				}else{
-					c.SendError(err)
+					c.SendError(err, -1)
 				}
 			} else {
-				c.SendError(err)
+				c.SendError(err, -1)
 			}
 		}
 
 
 	} else {
-		c.SendError(err)
+		c.SendError(err, -1)
 	}
 }
 
@@ -64,7 +64,7 @@ func (c *KlgDirController) Post() {
 // @Param	id		path 	string	true		"The key for staticblock"
 // @Success 200 {object} models.Note
 // @router /:id/ready_cards [get]
-func (c *KlgDirController) GetReadyTasks(){
+func (c *DeckController) GetReadyTasks(){
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
 	dir, err := models.GetDeckById(id)
@@ -91,16 +91,22 @@ func (c *KlgDirController) GetReadyTasks(){
 // @Success 200 {object} models.Deck
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *KlgDirController) GetOne() {
+func (c *DeckController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetDeckById(id)
-	if err != nil {
-		c.Data["json"] = err.Error()
-	} else {
-		c.Data["json"] = v
+	user, err := c.GetUser()
+	if err != nil{
+		c.SendError(err, -1)
+		return
 	}
-	c.ServeJSON()
+	deck := &models.Deck{Id: id}
+	v, err := models.GetUserDeckRela(user, deck)
+	if err != nil{
+		c.SendError(err, -1)
+		return
+	} else {
+		c.SendSuccess(v.AsMap())
+	}
 }
 
 // GetAll ...
@@ -115,7 +121,7 @@ func (c *KlgDirController) GetOne() {
 // @Success 200 {object} models.Deck
 // @Failure 403
 // @router / [get]
-func (c *KlgDirController) GetAll() {
+func (c *DeckController) GetAll() {
 	var fields []string
 	var sortby []string
 	var order []string
@@ -164,7 +170,7 @@ func (c *KlgDirController) GetAll() {
 			if err.Error() == "<QuerySeter> no row found"{
 				c.SendSuccess([][]string{})
 			}else{
-				c.SendError(err)
+				c.SendError(err, -1)
 			}
 		} else {
 			dids := []int{}
@@ -181,12 +187,12 @@ func (c *KlgDirController) GetAll() {
 				}
 				c.SendSuccess(rst)
 			}else{
-				c.SendError(err)
+				c.SendError(err, -1)
 			}
 		}
 
 	}else{
-		c.SendError(err)
+		c.SendError(err, -1)
 	}
 }
 
@@ -205,7 +211,7 @@ func GetDeckFromUser(l []int, user *models.User)(nl []*models.UserDeckRela, err 
 // @Success 200 {object} models.Deck
 // @Failure 403
 // @router /roots [get]
-func (c *KlgDirController) GetRootDirs() {
+func (c *DeckController) GetRootDirs() {
 
 	user, err := c.GetUser()
 	if err != nil{
@@ -237,7 +243,7 @@ func (c *KlgDirController) GetRootDirs() {
 // @Success 200 {object} models.Deck
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *KlgDirController) Put() {
+func (c *DeckController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
 	v := models.Deck{Id: id}
@@ -260,7 +266,7 @@ func (c *KlgDirController) Put() {
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *KlgDirController) Delete() {
+func (c *DeckController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
 	if err := models.DeleteDeck(id); err == nil {
@@ -280,7 +286,7 @@ func (c *KlgDirController) Delete() {
 // @Success 200 {object} models.Deck
 // @Failure 403 :id is not int
 // @router /:id/create/card [post]
-func (c *KlgDirController) AddCardToDeck() {
+func (c *DeckController) AddCardToDeck() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
 	_, err := models.GetDeckById(id)

@@ -61,6 +61,19 @@ func GetUserDeckRelaById(id int) (v *UserDeckRela, err error) {
 	return nil, err
 }
 
+func GetUserDeckRela(user *User, deck *Deck) (*UserDeckRela, error) {
+	o := orm.NewOrm()
+	qs := o.QueryTable("user_deck_rela")
+	r := UserDeckRela{}
+	err := qs.Filter("uid", user.Id).Filter("did", deck.Id).One(&r)
+	if err == nil{
+		return &r, nil
+	}else{
+		return nil, err
+	}
+}
+
+
 // GetAllUserDeckRela retrieves all UserDeckRela matches certain condition. Returns empty list if
 // no records exist
 func GetAllUserDeckRela(query map[string]string, fields []string, sortby []string, order []string,

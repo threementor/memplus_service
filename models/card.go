@@ -32,6 +32,12 @@ func init() {
 	orm.RegisterModel(new(Card))
 }
 
+func NewCard() Card {
+	c := Card{}
+	c.Loop = &Loop{Id: 1}
+	return c
+}
+
 // AddCard insert a new Card into database and returns
 // last inserted Id on success.
 func AddCard(m *Card) (id int64, err error) {

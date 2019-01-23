@@ -310,7 +310,7 @@ func copyCards(deck *AnkiDeck, newDir *Deck, user *User, o orm.Ormer) error{
 	o.InsertMulti(len(notes), notes)
 
 	//根据notes批量插入cards
-	sql := fmt.Sprintf("insert into card (level, nid, did, finish) select 0, id, did, 0 from note where did=%v", newDir.Id)
+	sql := fmt.Sprintf("insert into card (level, nid, did, finish, loop_id) select 0, id, did, 0, 1 from note where did=%v", newDir.Id)
 	_, err := o.Raw(sql).Exec()
 	return err
 }

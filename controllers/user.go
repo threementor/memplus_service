@@ -276,6 +276,7 @@ type loginCode struct{
 // @Success 200
 // @router /wechat_login [post]
 func (c *UserController) WechatLogin() {
+	beego.Info("wechat login")
 	v := loginCode{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
@@ -285,27 +286,25 @@ func (c *UserController) WechatLogin() {
 		js2s := getOpenId(v.Code)
 		//如果数据库里有此code，直接返回cookie，如果没有就创建一个并返回cookie
 		if js2s.Errcode == 0{
-			user, err := models.GetUserForOpenId(v.Code)
+			user, err := models.GetUserForOpenId(js2s.Openid)
 			if err != nil{
-				uid, err2 := models.CreateUserForOpenId(v.Code)
+				uid, err2 := models.CreateUserForOpenId(js2s.Openid)
 				if err2 != nil{
 					c.SendError(err2, -1)
+					return
 				}else{
-					if beego.BConfig.RunMode == "dev"{
-						c.SetSession("uid", 1)
-						c.SendSuccess(nil)
-					}else{
-						c.SetSession("uid", int(uid))
-						c.SendSuccess(nil)
-					}
-
+					c.SetSession("uid", int(uid))
+					c.SendSuccess(nil)
+					return
 				}
 			}else{
 				c.SetSession("uid", int(user.Id))
 				c.SendSuccess(nil)
+				return
 			}
 		}else{
 			c.SendError(errors.New(js2s.Errmsg), -1)
+			return
 		}
 
 	}

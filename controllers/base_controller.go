@@ -34,17 +34,22 @@ func (this *BaseController) Prepare() {
 			println("uid cover int fail", uid_int)
 		}
 	}else{
-		println("uid is null")
+		beego.Info("uid is null")
 	}
-	println("sleep ")
-	time.Sleep(2 * time.Second)
+	if beego.BConfig.RunMode == "dev" {
+		beego.Info("sleep ")
+		time.Sleep(2 * time.Second)
+	}
 
 	if app, ok := this.AppController.(LoginRequirePrepare); ok {
+		beego.Info("login require")
 		app.LoginRequirePrepare()
 	}
 }
 
 func (this *BaseController) GetUser() (*models.User, error){
+	beego.Info("GetUser")
+
 	user, ok := this.Data["user"]
 	if !ok{
 		return nil, errors.New("user not in data")

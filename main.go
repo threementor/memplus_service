@@ -13,6 +13,7 @@ import (
 var globalSessions *session.Manager
 const HOST = ""
 
+
 func main() {
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true

@@ -28,6 +28,7 @@ func main() {
 	mysqlConfig := cnf.String("mysql") + "?parseTime=true&loc=" +url.QueryEscape("Asia/Shanghai") //2018-12-27T14:55:20+08:00
 	beego.BConfig.WebConfig.Session.SessionProvider = "mysql"
 	beego.BConfig.WebConfig.Session.SessionProviderConfig = mysqlConfig
+	beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = 3600 * 24 // beego的session是定时删除的
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.DefaultRowsLimit = 100000000
     orm.RegisterDataBase("default", "mysql", mysqlConfig)

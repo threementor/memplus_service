@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/astaxie/beego"
 	"memplus_service/models"
+	"time"
 )
 
 type LoginRequirePrepare interface {
@@ -23,16 +24,21 @@ func (this *BaseController) Prepare() {
 	this.Data["isLogin"] = false
 
 	if uid != nil{
-		println("uid is not null", uid)
 		uid_int, ok := uid.(int)
 		if ok{
+			println("uid is not null", uid_int)
 			user, err := models.GetUsersById(uid_int)
 			this.Data["isLogin"] = err == nil
 			this.Data["user"] = user
+		}else{
+			println("uid cover int fail", uid_int)
 		}
 	}else{
 		println("uid is null")
 	}
+	println("sleep ")
+	time.Sleep(2 * time.Second)
+
 	if app, ok := this.AppController.(LoginRequirePrepare); ok {
 		app.LoginRequirePrepare()
 	}
@@ -58,9 +64,6 @@ func (this *BaseController) SendSuccess(data interface{}){
 
 
 func (this *BaseController) SendError(err error, code int){
-	if err.Error() == "<QuerySeter> no row found"{
-		code = 404
-	}
 	this.Data["json"] = map[string]interface{}{"code": code, "msg": err.Error()}
 	this.ServeJSON()
 }

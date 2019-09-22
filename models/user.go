@@ -17,6 +17,7 @@ type User struct {
 	DeletedAt time.Time `orm:"column(deleted_at);type(timestamp);null"`
 	Name      string    `orm:"column(name);size(255);null"`
 	Passwd    string    `orm:"column(passwd);size(255);null"`
+	Openid    string    `orm:"column(openid);size(255);null"`
 }
 
 func (t *User) TableName() string {
@@ -158,7 +159,7 @@ func DeleteUsers(id int) (err error) {
 }
 
 
-func Login(username, password string) (*User, error) {
+func IsValid(username, password string) (*User, error) {
 	o := orm.NewOrm()
 	user := &User{}
 	qs := o.QueryTable("users")
@@ -173,7 +174,33 @@ func Login(username, password string) (*User, error) {
 	return user, nil
 }
 
+
 func ChangePassword(user *User, newPwd string) (err error) {
 	user.Passwd = newPwd
 	return UpdateUsersById(user)
 }
+
+
+func GetUserForOpenId(openid string)(*User, error){
+	o := orm.NewOrm()
+	user := &User{}
+	qs := o.QueryTable("users")
+	err := qs.Filter("openid", openid).One(user)
+	if err == orm.ErrNoRows {
+		return nil, errors.New("没有此账号")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+
+func CreateUserForOpenId(openid string) (id int64, err error) {
+	o := orm.NewOrm()
+	m := &User{Openid: openid}
+	id, err = o.Insert(m)
+	return id, err
+}
+
+

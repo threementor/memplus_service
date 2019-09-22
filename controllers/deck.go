@@ -2,12 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
-	"github.com/astaxie/beego/orm"
 	"memplus_service/models"
 	"strconv"
-	"strings"
-	"fmt"
 )
 
 // DeckController operations for Deck
@@ -69,16 +65,17 @@ func (c *DeckController) GetReadyTasks(){
 	id, _ := strconv.Atoi(idStr)
 	dir, err := models.GetDeckById(id)
 	if err != nil{
-		c.Data["json"] = err.Error()
-		c.ServeJSON()
+		c.SendError(err, -1)
 		return
 	}
 	user, _ := c.GetUser()
 	cards, err := models.GetReadyCards(dir, user)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.SendError(err, -1)
+		return
 	} else {
-		c.Data["json"] = cards
+		c.SendSuccess(cards)
+		return
 	}
 	c.ServeJSON()
 }
@@ -122,88 +119,20 @@ func (c *DeckController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (c *DeckController) GetAll() {
-	var fields []string
-	var sortby []string
-	var order []string
-	var query = make(map[string]string)
-	var limit int64 = 10
-	var offset int64
-
-	// fields: col1,col2,entity.col3
-	if v := c.GetString("fields"); v != "" {
-		fields = strings.Split(v, ",")
-	}
-	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("limit"); err == nil {
-		limit = v
-	}
-	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("offset"); err == nil {
-		offset = v
-	}
-	// sortby: col1,col2
-	if v := c.GetString("sortby"); v != "" {
-		sortby = strings.Split(v, ",")
-	}
-	// order: desc,asc
-	if v := c.GetString("order"); v != "" {
-		order = strings.Split(v, ",")
-	}
-	// query: k:v,k:v
-	if v := c.GetString("query"); v != "" {
-		for _, cond := range strings.Split(v, ",") {
-			kv := strings.SplitN(cond, ":", 2)
-			if len(kv) != 2 {
-				c.Data["json"] = errors.New("Error: invalid query key/value pair")
-				c.ServeJSON()
-				return
-			}
-			k, v := kv[0], kv[1]
-			query[k] = v
-		}
-	}
 
 	user, err := c.GetUser()
 	if err == nil{
-		l, err := models.GetAllDeck(query, fields, sortby, order, offset, limit)
-		if err != nil {
-			if err.Error() == "<QuerySeter> no row found"{
-				c.SendSuccess([][]string{})
-			}else{
-				c.SendError(err, -1)
-			}
-		} else {
-			dids := []int{}
-			for i:=0; i<len(l); i++{
-				deck := l[i].(models.Deck)
-				dids = append(dids, deck.Id)
-			}
-			relas, err := GetDeckFromUser(dids, user)
-			go models.RefreshCount(relas)
-			if err == nil{
-				rst := []interface{}{}
-				for i:=0; i<len(relas); i++{
-					rst = append(rst, relas[i].AsMap())
-				}
-				c.SendSuccess(rst)
-			}else{
-				c.SendError(err, -1)
-			}
+		decks, err := models.GetDeckForUser(user)
+		if err == nil{
+			c.SendSuccess(decks)
+		}else{
+			c.SendError(err, -1)
 		}
-
 	}else{
 		c.SendError(err, -1)
 	}
 }
 
-
-func GetDeckFromUser(l []int, user *models.User)(nl []*models.UserDeckRela, err error){
-	o := orm.NewOrm()
-	relas := []*models.UserDeckRela{}
-	qs := o.QueryTable("user_deck_rela")
-	qs.Filter("did__in", l).Filter("uid", user.Id).All(&relas)
-	return relas, err
-}
 
 // GetAll ...
 // @Title Get Root Dirs
@@ -291,8 +220,7 @@ func (c *DeckController) AddCardToDeck() {
 	id, _ := strconv.Atoi(idStr)
 	_, err := models.GetDeckById(id)
 	if err != nil{
-		c.Data["json"] = fmt.Sprintf("获取牌组失败。%v", err.Error())
-		c.ServeJSON()
+		c.SendError(err, -1)
 		return
 	}
 	var note models.Note
@@ -307,18 +235,23 @@ func (c *DeckController) AddCardToDeck() {
 				card.Did = id
 				if _, err = models.AddCard(&card); err == nil {
 					c.Ctx.Output.SetStatus(201)
-					c.Data["json"] = "OK"
+					c.SendSuccess(nil)
+					return
 				} else {
-					c.Data["json"] = fmt.Sprintf("添加card失败。%v", err.Error())
+					c.SendError(err, -1)
+					return
 				}
 			}else{
-				c.Data["json"] = fmt.Sprintf("解析card失败。%v", err.Error())
+				c.SendError(err, -1)
+				return
 			}
 		}else{
-			c.Data["json"] = fmt.Sprintf("添加note失败。%v", err.Error())
+			c.SendError(err, -1)
+			return
 		}
 	} else {
-		c.Data["json"] = fmt.Sprintf("解析note失败。%v", err.Error())
+		c.SendError(err, -1)
+		return
 	}
-	c.ServeJSON()
+	c.SendSuccess(nil)
 }

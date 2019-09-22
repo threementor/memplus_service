@@ -3,10 +3,10 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
 	"time"
-	"github.com/astaxie/beego/orm"
 )
 
 type Deck struct {
@@ -452,4 +452,25 @@ func RefreshCount(relas []*UserDeckRela) {
 
 	}
 	return
+}
+
+
+func GetDeckForUser(user *User)(decks []*Deck, err error){
+	o := orm.NewOrm()
+	relas := []*UserDeckRela{}
+	qs := o.QueryTable("user_deck_rela")
+	qs.Filter("uid", user.Id).All(&relas)
+	if err != nil{
+		return nil, err
+	}
+	ids := []int{}
+	for i:=0; i<len(relas); i++{
+		ids = append(ids, relas[i].Deck.Id)
+	}
+	if len(ids) != 0{
+		qs = o.QueryTable("deck")
+		qs.Filter("id__in", ids).All(&decks)
+	}
+	return decks, nil
+
 }

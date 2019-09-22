@@ -121,8 +121,16 @@ func init() {
 
 	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
+			Method: "Remember",
+			Router: `/:id/easy`,
+			AllowHTTPMethods: []string{"put"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
+		beego.ControllerComments{
 			Method: "Forget",
-			Router: `/:id/forget`,
+			Router: `/:id/hard`,
 			AllowHTTPMethods: []string{"put"},
 			MethodParams: param.Make(),
 			Params: nil})
@@ -137,16 +145,8 @@ func init() {
 
 	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
 		beego.ControllerComments{
-			Method: "Remember",
-			Router: `/:id/remember`,
-			AllowHTTPMethods: []string{"put"},
-			MethodParams: param.Make(),
-			Params: nil})
-
-	beego.GlobalControllerRouter["memplus_service/controllers:CardController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:CardController"],
-		beego.ControllerComments{
 			Method: "Soso",
-			Router: `/:id/soso`,
+			Router: `/:id/ok`,
 			AllowHTTPMethods: []string{"put"},
 			MethodParams: param.Make(),
 			Params: nil})
@@ -588,6 +588,14 @@ func init() {
 			Method: "Status",
 			Router: `/status/`,
 			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:UserController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:UserController"],
+		beego.ControllerComments{
+			Method: "WechatLogin",
+			Router: `/wechat_login`,
+			AllowHTTPMethods: []string{"post"},
 			MethodParams: param.Make(),
 			Params: nil})
 

@@ -34,9 +34,9 @@ func (c *CardController) GetOne() {
 	id, _ := strconv.Atoi(idStr)
 	v, err := models.GetCardById(id)
 	if err != nil {
-		c.Data["json"] = map[string]interface{}{"msg": err.Error(), "success": false}
+		c.SendError(err, -1)
 	} else {
-		c.Data["json"] = map[string]interface{}{"data": v, "success": false}
+		c.SendSuccess(v)
 	}
 	c.ServeJSON()
 }
@@ -184,7 +184,7 @@ func (c *CardController) Delete() {
 // @Param	id		path 	string	true		"forget klg"
 // @Success 200 {object} models.Note
 // @Failure 403 :id is not int
-// @router /:id/forget [put]
+// @router /:id/hard [put]
 func (c *CardController) Forget() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
@@ -202,7 +202,7 @@ func (c *CardController) Forget() {
 // @Param	id		path 	string	true		"soso klg"
 // @Success 200 {object} models.Note
 // @Failure 403 :id is not int
-// @router /:id/soso [put]
+// @router /:id/ok [put]
 func (c *CardController) Soso() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
@@ -220,7 +220,7 @@ func (c *CardController) Soso() {
 // @Param	id		path 	string	true		"remeber klg"
 // @Success 200 {object} models.Note
 // @Failure 403 :id is not int
-// @router /:id/remember [put]
+// @router /:id/easy [put]
 func (c *CardController) Remember() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)

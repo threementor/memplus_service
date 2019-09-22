@@ -3,10 +3,13 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/astaxie/beego"
+	"io/ioutil"
 	"memplus_service/models"
+	"net/http"
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 // UserController operations for Users
@@ -27,7 +30,7 @@ func (c *UserController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
-	c.Mapping("Login", c.Login)
+	c.Mapping("IsValid", c.Login)
 	c.Mapping("Logout", c.Logout)
 }
 
@@ -187,9 +190,9 @@ func (u *UserController) Login() {
 	username := u.GetString("username")
 	password := u.GetString("password")
 	fmt.Println(username, password)
-	user, err := models.Login(username, password)
+	user, err := models.IsValid(username, password)
 	if err == nil {
-		u.SetSession("uid", user.Id)
+		u.SetSession("uid", int(user.Id))
 		u.Data["json"] = map[string]interface{}{"success": true, "userName": username}
 	} else {
 		u.Data["json"] = map[string]interface{}{"success": false, "msg": err.Error()}
@@ -244,3 +247,66 @@ func (u *UserController) ChangePwd() {
 	u.ServeJSON()
 }
 
+
+type Jscode2SessionResp struct {
+	Errcode int `json:"errcode"`
+	Errmsg string `json:"errmsg"`
+	SessionKey string `json:"session_key"`
+	Openid string `json:"openid"`
+}
+
+func getOpenId(code string) Jscode2SessionResp {
+	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=wx296ef650ee2db9a7&secret=b3e5af159d774a8d2cfc4b89a1dbf4c5&js_code=%v&grant_type=authorization_code", code)
+	resp, _ := http.Get(url) //{"session_key":"K5qskhYtDzedlzxkYB3PDQ==","openid":"ob5Dr4hz7hb1uEc4eCXIPVYiVwSY"}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	js2session := Jscode2SessionResp{}
+	json.Unmarshal(body, &js2session)
+	return js2session
+}
+
+type loginCode struct{
+	Code string
+}
+
+
+// Post ...
+// @Title wechat login
+// @Description
+// @Success 200
+// @router /wechat_login [post]
+func (c *UserController) WechatLogin() {
+	v := loginCode{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+
+	if v.Code == ""{
+		c.SendError(errors.New("code can not be null"), -1)
+	}else {
+		js2s := getOpenId(v.Code)
+		//如果数据库里有此code，直接返回cookie，如果没有就创建一个并返回cookie
+		if js2s.Errcode == 0{
+			user, err := models.GetUserForOpenId(v.Code)
+			if err != nil{
+				uid, err2 := models.CreateUserForOpenId(v.Code)
+				if err2 != nil{
+					c.SendError(err2, -1)
+				}else{
+					if beego.BConfig.RunMode == "dev"{
+						c.SetSession("uid", 1)
+						c.SendSuccess(nil)
+					}else{
+						c.SetSession("uid", int(uid))
+						c.SendSuccess(nil)
+					}
+
+				}
+			}else{
+				c.SetSession("uid", int(user.Id))
+				c.SendSuccess(nil)
+			}
+		}else{
+			c.SendError(errors.New(js2s.Errmsg), -1)
+		}
+
+	}
+}

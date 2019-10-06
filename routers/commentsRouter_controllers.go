@@ -209,6 +209,14 @@ func init() {
 
 	beego.GlobalControllerRouter["memplus_service/controllers:DeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:DeckController"],
 		beego.ControllerComments{
+			Method: "RegDeck",
+			Router: `/:id/reg`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["memplus_service/controllers:DeckController"] = append(beego.GlobalControllerRouter["memplus_service/controllers:DeckController"],
+		beego.ControllerComments{
 			Method: "GetRootDirs",
 			Router: `/roots`,
 			AllowHTTPMethods: []string{"get"},

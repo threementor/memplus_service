@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"memplus_service/models"
 	"strconv"
 )
@@ -96,15 +97,24 @@ func (c *DeckController) GetOne() {
 		c.SendError(err, -1)
 		return
 	}
-	deck := &models.Deck{Id: id}
-	v, err := models.GetUserDeckRela(user, deck)
+	deck, err := models.GetDeckById(id)
 	if err != nil{
-		c.SendError(err, -1)
+		c.SendError(errors.New("获取牌组失败"), -1)
+		return
+	}
+	_, err = models.GetUserDeckRela(user, deck)
+	if err != nil{
+		data := map[string]interface{}{"deck": deck, "auth": false}
+		c.SendSuccess(data)
 		return
 	} else {
-		c.SendSuccess(v.AsMap())
+		data := map[string]interface{}{"deck": deck, "auth": true}
+		c.SendSuccess(data)
+		return
 	}
 }
+
+
 
 // GetAll ...
 // @Title Get All
@@ -178,15 +188,19 @@ func (c *DeckController) Put() {
 	v := models.Deck{Id: id}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
 		if err := models.UpdateDeckById(&v); err == nil {
-			c.Data["json"] = "OK"
+			c.SendSuccess(v)
+			return
 		} else {
-			c.Data["json"] = err.Error()
+			c.SendError(err, -1)
+			return
 		}
 	} else {
-		c.Data["json"] = err.Error()
+		c.SendError(err, -1)
+		return
 	}
-	c.ServeJSON()
+
 }
+
 
 // Delete ...
 // @Title Delete
@@ -204,6 +218,37 @@ func (c *DeckController) Delete() {
 		c.Data["json"] = err.Error()
 	}
 	c.ServeJSON()
+}
+
+
+
+// Put ...
+// @Title reg deck
+// @Description reg the Deck
+// @Param	id		path 	string	true		"The id you want to update"
+// @Success 200 {object} models.Deck
+// @Failure 403 :id is not int
+// @router /:id/reg [post]
+func (c *DeckController) RegDeck() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	_, err := models.GetDeckById(id)
+	if err != nil{
+		c.SendError(err, -1)
+		return
+	}
+	user, err := c.GetUser()
+	if err != nil{
+		c.SendError(err, -1)
+		return
+	}
+	rela := models.UserDeckRela{Uid: user.Id, Deck: &models.Deck{Id: id}}
+	_, err = models.AddUserDeckRela(&rela)
+	if err != nil{
+		c.SendError(err, -1)
+		return
+	}
+	c.SendSuccess(nil)
 }
 
 

@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
@@ -232,7 +233,7 @@ func GetSonCard(this *Deck)([]*Card){
 }
 
 
-func GetCards(this *Deck)([]*Card, error){
+func GetCards(this *Deck, user *User)([]*Card, error){
 	//先获取所有子目录的id
 	subDirs, err := GetSubDirs(this, true)
 
@@ -247,14 +248,76 @@ func GetCards(this *Deck)([]*Card, error){
 	for _, sd := range(subDirs){
 		sub_dir_ids = append(sub_dir_ids, sd.Id)
 	}
-	qs.Filter("did__in", sub_dir_ids).All(&cards)
+	qs.Filter("uid", user.Id).Filter("did__in", sub_dir_ids).All(&cards)
 	return cards, nil
+}
+
+
+func syncCards(this *Deck, user *User)(error) {
+	//1 生成左右两份 map
+	//2 将map中一样的部分消除
+	//3 将nid表多出来的，插入card
+	//4 将card表多出来的，删除
+
+	nidMap := map[int]int{}
+	cidMap := map[int]*Card{}
+	o := orm.NewOrm()
+
+	qs1 := o.QueryTable("note")
+	notes := []*Note{}
+	qs1.Filter("did", this.Id).All(&notes)
+	for i:=0; i<len(notes); i++{
+		n := notes[i]
+		nidMap[n.Id] = 1
+	}
+
+	qs2 := o.QueryTable("card")
+	cards := []*Card{}
+	qs2.Filter("uid", user.Id).Filter("did", this.Id).All(&cards)
+	for i:=0; i<len(cards); i++{
+		cidMap[cards[i].Note.Id] = cards[i]
+	}
+
+	// 都有的 不去管
+	// cid 没有的，添加进去
+
+	allHave := map[int]int{}
+	cidLess := map[int]int{}
+	for _, note := range notes {
+		nid := note.Id
+		if cidMap[nid] != nil{
+			allHave[nid] = 1
+		}else{
+			beego.Info("have no", nid)
+			cidLess[nid] = 1
+		}
+	}
+
+	for nid, _ := range allHave{
+		delete(cidMap, nid)
+		delete(nidMap, nid)
+	}
+	// cid有，nid没有的，删掉cid
+	for _, card := range cidMap{
+		o.Delete(card)
+	}
+	// nid有，cid没有的，添加到user名下
+	for nid, _ := range cidLess{
+		beego.Info("insert %v", nid)
+		c := Card{Note: &Note{Id: nid}, Uid: user.Id, Did: this.Id, Level: 0, Loop: &Loop{Id: 1}}
+		o.Insert(&c)
+	}
+	return nil
 }
 
 
 func GetReadyCards(this *Deck, user *User)([]*Card, error){
 	//筛选子目录下的所有card，然后过滤readytime
-	cards, err := GetCards(this)
+	err := syncCards(this, user)
+	if err != nil{
+		return nil, err
+	}
+	cards, err := GetCards(this, user)
 	now := time.Now()
 	ready_cards := []*Card{}
 	if err != nil{

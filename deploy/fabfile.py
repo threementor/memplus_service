@@ -26,7 +26,6 @@ def deploy():
     with cd(workDir):
         with path(PATH):
             with prefix("export GOPATH=/root/dev/gopath"):
-                run("echo $PATH; echo $GOPATH")
                 run("git reset --hard")
                 run("go get github.com/smartwalle/alipay")
                 run("go get github.com/satori/go.uuid")

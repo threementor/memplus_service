@@ -22,6 +22,7 @@ type Card struct {
 	Loop           *Loop     `orm:"rel(one);column(loop_id);null"`
 	Finish         bool      `orm:"column(finish);null"`
 	Did            int       `orm:"column(did);null"`
+	Uid            int       `orm:"column(uid);null"`
 }
 
 func (t *Card) TableName() string {

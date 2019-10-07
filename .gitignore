@@ -5,3 +5,5 @@ samples/
 .idea/
 *.tmp
 *.log
+memplus_service
+conf/
